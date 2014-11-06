@@ -14,6 +14,68 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# XAMPP Specific ignores
+*.bat
+*.log
+*.ini
+changes.txt
+readme_en.txt
+readme_de.txt
+passwords.txt
+service.exe
+uninstall.exe
+uninstall.dat
+xampp_start.exe
+xampp_stop.exe
+xampp_control.exe
+xampp-control.exe
+xampp-icon-uninstall.ico
+xampp.ico
+xamppserver.inc
+xamppbasic.inc
+test.php
+php.png
+install.sys
+install.php
+portcheck.php
+folder.ico
+config.awk
+awk.exe
+
+
+
+# Folders to ignore
+anonymous/
+apache/
+cgi-bin/
+contrib/
+FileZillaFTP/
+htdocsDefault/
+HTTP/
+img/
+licenses/
+locale/
+mailoutput/
+mailtodisk/
+MercuryMail/
+mysql/
+perl/
+php/
+phpMyAdmin/
+security/
+sendmail/
+src/
+tmp/
+tomcat/
+xampp/install
+webalizer/
+webdav/
+
+
+
+
+
+
 # =========================
 # Operating System Files
 # =========================
