@@ -1,15 +1,17 @@
 
-requirejs.config({
-    //By default load any module IDs from js/lib
+requirejs.config(
+{
+ 
     baseUrl: '',
-    //except, if the module ID starts with "app",
-    //load it from the js/app directory. paths
-    //config is relative to the baseUrl, and
-    //never includes a ".js" extension since
-    //the paths config could be for a directory.
+  
     paths: {
-        MathUtil: 'scripts/modules/MathUtil',
+
         GameWorld: 'scripts/modules/GameWorld',
+
+        // Helper file to lump all math functionality into a single include
+        MathUtil: 'scripts/modules/MathUtil',
+        
+        // Math Structures
         GLMatrix: 'scripts/lib/gl-matrix/gl-matrix',
         GLCommon: "scripts/lib/gl-matrix/common",
         Vector2: "scripts/lib/gl-matrix/vec2",
@@ -20,6 +22,10 @@ requirejs.config({
         Matrix3: "scripts/lib/gl-matrix/mat3",
         Matrix4: "scripts/lib/gl-matrix/mat4",
         Quaternion: "scripts/lib/gl-matrix/quat",
+
+        // Data Structures
+        Collections: "scripts/lib/collections/collections.min",
+        Buckets: "scripts/lib/Buckets/Buckets",
     }
 });
 
