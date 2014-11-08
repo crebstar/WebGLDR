@@ -6,7 +6,15 @@ requirejs.config(
   
     paths: {
 
+        CBEngine : 'scripts/modules/CBEngine',
+        CBRenderer : 'scripts/modules/CBRenderer',
+        Mesh: 'scripts/modules/Mesh',
+        Material: 'scripts/modules/Material',
+        ShaderManager: 'scripts/modules/ShaderManager',
+
+        Actor: 'scripts/modules/Actor',
         GameWorld: 'scripts/modules/GameWorld',
+        Camera: "scripts/modules/Camera",
 
         // Helper file to lump all math functionality into a single include
         MathUtil: 'scripts/modules/MathUtil',
@@ -26,34 +34,19 @@ requirejs.config(
         // Data Structures
         Collections: "scripts/lib/collections/collections.min",
         Buckets: "scripts/lib/Buckets/Buckets",
+
+        // Other External Javascript Libraries
+        JQuery: "scripts/lib/JQuery/jquery-2.1.1",
     }
 });
 
 
-require(["GameWorld"], function( GameWorld )
-{
-
-});
-
-/*
-require(["scripts/Util/MathUtil"], function( MathUtil )
-{
-
-});
-*/
-
-
-
-/*
-
-
-require(["scripts/modules/TestObject"], function( TestObject )
+require( [ "CBEngine" ], function( CBEngine )
 {
 
 });
 
 
-*/
 
 
 
