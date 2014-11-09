@@ -42,8 +42,8 @@ MeshComponent.prototype =
 
 	createMaterial : function( vertexShaderName, fragmentShaderName )
 	{
-		material = null;
-		material = new Material();
-		material.loadAndSetShaderProgram( vertexShaderName, fragmentShaderName );
+		this.material = null;
+		this.material = new Material();
+		this.material.loadAndSetShaderProgram( vertexShaderName, fragmentShaderName );
 	},
 }

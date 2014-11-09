@@ -20,6 +20,9 @@ function InitializeEngine()
 
 	var testActor = new Actor();
 	CreateMeshComponentForActor( testActor, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+
+	var testActor2 = new Actor();
+	CreateMeshComponentForActor( testActor, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
 }
 
 

@@ -29,8 +29,18 @@ function GetShaderKeyFromShaderFileNames( vertexShaderName, fragmentShaderName )
 	return shaderKey;
 }
 
-// NON ASYNC 
-function LoadShaderProgramFromCacheOrCreateProgram( vertexShaderName, fragmentShaderName, callbackFunction )
+
+function AddShaderProgramToCache( shaderProgramKey, shaderProgram )
+{
+	if ( shaderProgram !== null )
+	{
+		ShaderProgramRegistry.set( shaderProgramKey, shaderProgram );
+	}
+}
+
+
+// PR: NON ASYNC 
+function LoadShaderProgramFromCacheOrCreateProgram( vertexShaderName, fragmentShaderName, material )
 {
 	var sharedRenderer = CBRenderer.getSharedRenderer();
 	var shaderKey = GetShaderKeyFromShaderFileNames( vertexShaderName, fragmentShaderName ); // TODO:: Hash this instead
@@ -38,10 +48,10 @@ function LoadShaderProgramFromCacheOrCreateProgram( vertexShaderName, fragmentSh
 
 	if ( shaderProgram == null )
 	{
-		var vertexShaderText;
-		var fragmentShaderText;
-		var vertexShader;
-		var fragmentShader;
+		var vertexShaderText 	= null;
+		var fragmentShaderText  = null;
+		var vertexShader        = null;
+		var fragmentShader      = null;
 		
 		$.ajax(
 		{
@@ -71,11 +81,13 @@ function LoadShaderProgramFromCacheOrCreateProgram( vertexShaderName, fragmentSh
 	    fragmentShader = CompileShader( fragmentShaderText, sharedRenderer.renderer.FRAGMENT_SHADER, "Fragment" );
 
 	    shaderProgram = LinkAndCreateShaderProgram( vertexShader, fragmentShader );
-	}
 
-    if ( callbackFunction !== null && shaderProgram !== null )
+	    AddShaderProgramToCache( shaderKey, shaderProgram );
+	}
+	
+    if ( material !== null && shaderProgram !== null )
     {
-    	callbackFunction( shaderProgram );
+    	material.OnShaderProgramLoaded( shaderProgram );
     }
 }
 
