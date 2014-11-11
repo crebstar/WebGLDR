@@ -25,15 +25,16 @@ function InitializeEngine()
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 
 	// ======= TEST ======= //
-	var triangle_vertex =
-    [
-        -1,-1,0,
-        0,0,1,
-        1,-1,0,
-        1,1,0,
-        1,1,0,
-        1,0,0
-    ];
+	 var triangle_vertex = 
+	 [
+    	-1,-1,0,
+    	0,0,1,
+    	1,-1,0,
+    	1,1,0,
+    	1,1,0,
+    	1,0,0
+  	];
+
 
     var triangle_faces = [0,1,2];
 

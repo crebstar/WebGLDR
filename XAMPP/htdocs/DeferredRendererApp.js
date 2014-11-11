@@ -38,14 +38,26 @@ requirejs.config(
 
         // Other External Javascript Libraries
         JQuery: "scripts/lib/JQuery/jquery-2.1.1",
+
+        // Demo
+        Reference: "scripts/modules/Reference",
     }
 });
+
 
 
 require( [ "CBEngine" ], function( CBEngine )
 {
 
 });
+
+
+/*
+require( [ "Reference" ], function( ref )
+{
+
+});
+*/
 
 
 

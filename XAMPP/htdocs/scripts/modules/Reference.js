@@ -152,9 +152,9 @@ var time_old = 0;
 var animate = function( time ) 
 {
     var dt = time - time_old;
-    rotateZ(MOVEMATRIX, dt*0.005);
-    rotateY(MOVEMATRIX, dt*0.004);
-    rotateX(MOVEMATRIX, dt*0.003);
+    //rotateZ(MOVEMATRIX, dt*0.005);
+    //rotateY(MOVEMATRIX, dt*0.004);
+   // rotateX(MOVEMATRIX, dt*0.003);
     time_old = time;
 
 	var _position       = webGLContext.getAttribLocation(SHADER_PROGRAM, "position");

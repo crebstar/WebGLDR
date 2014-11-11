@@ -97,18 +97,24 @@ MeshComponent.prototype =
 	{
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
+		var vertsAsFloat32Array = new Float32Array( vertexData );
+		var faceDataAsUInt16Array = new Uint16Array( faceData );
+
+		//console.log( vertsAsFloat32Array );
+		//console.log( faceDataAsUInt16Array );
+
 		// Vertex Buffer
 		this.m_vertexBuffer = sharedRenderer.renderer.createBuffer();
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, this.m_vertexBuffer );
 		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ARRAY_BUFFER, 
-			new Float32Array( vertexData ),
+			vertsAsFloat32Array,
 			sharedRenderer.renderer.STATIC_DRAW );
 
 		// Face Buffer
 		this.m_faceBuffer = sharedRenderer.renderer.createBuffer();
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, this.m_faceBuffer );
 		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, 
-			new Uint16Array( faceData ),
+			faceDataAsUInt16Array,
 			sharedRenderer.renderer.STATIC_DRAW );
 	},
 }
