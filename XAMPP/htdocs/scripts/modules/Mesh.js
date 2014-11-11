@@ -36,6 +36,7 @@ var MeshComponent = function()
 	this.material 			= null;
 	this.m_vertexBuffer 	= null;
 	this.m_faceBuffer 		= null;
+	this.m_NPoints 			= 0;
 }
 
 
@@ -81,7 +82,7 @@ MeshComponent.prototype =
 	renderMesh : function()
 	{
 		var sharedRenderer = CBRenderer.getSharedRenderer();
-		sharedRenderer.renderer.drawElements( sharedRenderer.renderer.TRIANGLES, 3, sharedRenderer.renderer.UNSIGNED_SHORT, 0 );
+		sharedRenderer.renderer.drawElements( sharedRenderer.renderer.TRIANGLES, this.m_NPoints, sharedRenderer.renderer.UNSIGNED_SHORT, 0 );
 	},
 
 
@@ -110,5 +111,7 @@ MeshComponent.prototype =
 		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, 
 			new Uint16Array( faceData ),
 			sharedRenderer.renderer.STATIC_DRAW );
+
+		this.m_NPoints = faceData.length;
 	},
 }

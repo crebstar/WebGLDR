@@ -1,8 +1,9 @@
 
-define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh" ], function( require, CBRenderer )
+define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "JQuery" ], function( require, CBRenderer )
 {
 	console.log( "CBEngine.js has finished loading" );
 
+	loadDragonJson();
 	InitializeEngine();
 	InitializeGameDirector();
 	StartGameLoop();
@@ -10,6 +11,7 @@ define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh" ],
 
 
 var testActor = null;
+var dragonActor = null;
 
 function InitializeEngine()
 {
@@ -37,8 +39,12 @@ function InitializeEngine()
 
     var triangle_faces = [0,1,2];
 
-	testActor = new Actor();
-	CreateMeshComponentWithVertDataForActor( testActor, triangle_vertex, triangle_faces, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+	//testActor = new Actor();
+	//CreateMeshComponentWithVertDataForActor( testActor, triangle_vertex, triangle_faces, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+
+	var dragonAsJSON = loadDragonJson();
+	dragonActor = new Actor();
+	CreateMeshComponentWithVertDataForActor( dragonActor, dragonAsJSON.vertices, dragonAsJSON.indices, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
 }
 
 
@@ -90,7 +96,7 @@ function RunFrame( timeSeconds )
 
 
 	// ==== Update ==== //
-	testActor.update( deltaSeconds );
+	dragonActor.update( deltaSeconds );
 	
 
 	// ==== Render ==== //
@@ -102,7 +108,7 @@ function RunFrame( timeSeconds )
 	sharedRenderer.renderer.viewport( 0.0, 0.0, sharedRenderer.canvasDOMElement.width, sharedRenderer.canvasDOMElement.height );
     sharedRenderer.renderer.clear( sharedRenderer.renderer.COLOR_BUFFER_BIT | sharedRenderer.renderer.DEPTH_BUFFER_BIT );
 
-	sharedRenderer.renderScene( testActor, deltaSeconds );
+	sharedRenderer.renderScene( dragonActor, deltaSeconds );
 
 	// ==== Clean up for next frame ==== //
 	sharedRenderer.renderer.flush();
@@ -112,3 +118,26 @@ function RunFrame( timeSeconds )
 	window.requestAnimationFrame( RunFrame );
 }
 
+
+// TEST
+function loadDragonJson()
+{
+	var dragonAsJSON = null;
+
+	$.ajax(
+	{
+	    async: false, 
+	    dataType : "text",
+	    url: "DataFiles/dragon.json",
+	    success: function( result ) 
+	    {
+	        console.log( "--- dragon.json has been loaded! --- " );
+	        dragonAsJSON = JSON.parse( result );
+
+	    }
+   	});
+
+	console.log( dragonAsJSON );
+
+   	return dragonAsJSON;
+}

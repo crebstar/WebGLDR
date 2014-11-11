@@ -12,6 +12,7 @@ var ATTRIBUTE_NOT_LOCATED 			= UNIFORM_NOT_LOCATED;
 // ===== Attributes  ===== //
 var POSITION_ATTRIBUTE_NAME 		= "a_position";
 var COLOR_ATTRIBUTE_NAME 			= "a_color";
+var TEXTURE_COORDS_ATTRIBUTE_NAME 	= "a_textureCoords";
 
 // ===== Uniforms ===== //
 var MODEL_MATRIX_UNIFORM_NAME 		= "u_modelMatrix";
@@ -180,8 +181,9 @@ var ShaderAttribute = function( attributeName )
 
 var MaterialAttributes = function()
 {
-	this.m_positionAttribute 	= new ShaderAttribute( POSITION_ATTRIBUTE_NAME );
-	this.m_colorAttribute 		= new ShaderAttribute( COLOR_ATTRIBUTE_NAME );
+	this.m_positionAttribute 		= new ShaderAttribute( POSITION_ATTRIBUTE_NAME );
+	this.m_colorAttribute 			= new ShaderAttribute( COLOR_ATTRIBUTE_NAME );
+	this.m_textureCoordsAttribute 	= new ShaderAttribute( TEXTURE_COORDS_ATTRIBUTE_NAME );
 }
 
 
@@ -200,11 +202,13 @@ MaterialAttributes.prototype =
 		}
 
 		var sharedRenderer = CBRenderer.getSharedRenderer();
-		this.m_positionAttribute.m_attributeLocation = sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_positionAttribute.m_attributeName );
-		this.m_colorAttribute.m_attributeLocation 	 = sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_colorAttribute.m_attributeName );
+		this.m_positionAttribute.m_attributeLocation 		= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_positionAttribute.m_attributeName );
+		//this.m_colorAttribute.m_attributeLocation 	 		= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_colorAttribute.m_attributeName );
+		this.m_textureCoordsAttribute.m_attributeLocation  	= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_textureCoordsAttribute.m_attributeName );
 
 		//console.log( this.m_positionAttribute.m_attributeLocation );
 		//console.log( this.m_colorAttribute.m_attributeLocation );
+		//console.log( this.m_textureCoordsAttribute.m_attributeLocation );
 	},
 
 
@@ -213,7 +217,8 @@ MaterialAttributes.prototype =
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
 		sharedRenderer.renderer.enableVertexAttribArray( this.m_positionAttribute.m_attributeName );
-		sharedRenderer.renderer.enableVertexAttribArray( this.m_colorAttribute.m_attributeName );
+		//sharedRenderer.renderer.enableVertexAttribArray( this.m_colorAttribute.m_attributeName );
+		sharedRenderer.renderer.enableVertexAttribArray( this.m_textureCoordsAttribute.m_attributeName );
 	},
 
 
@@ -221,8 +226,9 @@ MaterialAttributes.prototype =
 	{
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
-		sharedRenderer.renderer.vertexAttribPointer( this.m_positionAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+3), 0 );
-		sharedRenderer.renderer.vertexAttribPointer( this.m_colorAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+3), 3*4 );
+		sharedRenderer.renderer.vertexAttribPointer( this.m_positionAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+2), 0 );
+		//sharedRenderer.renderer.vertexAttribPointer( this.m_colorAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+3), 3*4 );
+		sharedRenderer.renderer.vertexAttribPointer( this.m_textureCoordsAttribute.m_attributeName, 2, sharedRenderer.renderer.FLOAT, false, 4*(3+2), (3*4) );
 		
 		//console.log( "setAttributePointers for COLOR: " );
 		//console.log( this.m_colorAttribute.m_attributeName );
