@@ -82,7 +82,7 @@ MeshComponent.prototype =
 	renderMesh : function()
 	{
 		var sharedRenderer = CBRenderer.getSharedRenderer();
-		sharedRenderer.renderer.drawElements( sharedRenderer.renderer.TRIANGLES, this.m_NPoints, sharedRenderer.renderer.UNSIGNED_SHORT, 0 );
+		sharedRenderer.renderer.drawElements( sharedRenderer.renderer.TRIANGLES, this.m_NPoints, sharedRenderer.renderer.UNSIGNED_INT, 0 );
 	},
 
 
@@ -109,7 +109,7 @@ MeshComponent.prototype =
 		this.m_faceBuffer = sharedRenderer.renderer.createBuffer();
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, this.m_faceBuffer );
 		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, 
-			new Uint16Array( faceData ),
+			new Uint32Array( faceData ),
 			sharedRenderer.renderer.STATIC_DRAW );
 
 		this.m_NPoints = faceData.length;

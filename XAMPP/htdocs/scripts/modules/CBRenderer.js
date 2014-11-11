@@ -73,6 +73,10 @@ var CBRenderer = ( function()
 			try
 			{
 				webGLContext = this.canvasDOMElement.getContext( "webgl" ) || this.canvasDOMElement.getContext( "experimental-webgl" );
+				// PR: to support UInt32 indices for face buffer
+				var EXT = webGLContext.getExtension( "OES_element_index_uint" ) ||
+      				webGLContext.getExtension( "MOZ_OES_element_index_uint" ) ||
+        			webGLContext.getExtension( "WEBKIT_OES_element_index_uint" );
 			}
 			catch ( webGLError )
 			{
@@ -97,7 +101,7 @@ var CBRenderer = ( function()
 
 		CBRenderer.prototype.setDefaultRenderingSettings = function()
 		{
-			this.renderer.clearColor( 1.0, 0.0, 0.0, 0.0 );
+			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
 			this.renderer.enable( this.renderer.DEPTH_TEST );
 			this.renderer.depthFunc( this.renderer.LEQUAL );
 			this.renderer.clearDepth( 1.0 );

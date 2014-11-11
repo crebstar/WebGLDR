@@ -216,9 +216,9 @@ MaterialAttributes.prototype =
 	{
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
-		sharedRenderer.renderer.enableVertexAttribArray( this.m_positionAttribute.m_attributeName );
+		sharedRenderer.renderer.enableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
 		//sharedRenderer.renderer.enableVertexAttribArray( this.m_colorAttribute.m_attributeName );
-		sharedRenderer.renderer.enableVertexAttribArray( this.m_textureCoordsAttribute.m_attributeName );
+		sharedRenderer.renderer.enableVertexAttribArray( this.m_textureCoordsAttribute.m_attributeLocation );
 	},
 
 
@@ -226,9 +226,12 @@ MaterialAttributes.prototype =
 	{
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
-		sharedRenderer.renderer.vertexAttribPointer( this.m_positionAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+2), 0 );
+		var stride = ( Float32Array.BYTES_PER_ELEMENT * 8 );
+
+		sharedRenderer.renderer.vertexAttribPointer( this.m_positionAttribute.m_attributeLocation, 3, sharedRenderer.renderer.FLOAT, false, stride, 0  );
+		sharedRenderer.renderer.vertexAttribPointer( this.m_textureCoordsAttribute.m_attributeLocation, 2, sharedRenderer.renderer.FLOAT, false, stride, ( Float32Array.BYTES_PER_ELEMENT * 6) );
+
 		//sharedRenderer.renderer.vertexAttribPointer( this.m_colorAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+3), 3*4 );
-		sharedRenderer.renderer.vertexAttribPointer( this.m_textureCoordsAttribute.m_attributeName, 2, sharedRenderer.renderer.FLOAT, false, 4*(3+2), (3*4) );
 		
 		//console.log( "setAttributePointers for COLOR: " );
 		//console.log( this.m_colorAttribute.m_attributeName );
