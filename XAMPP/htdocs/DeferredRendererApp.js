@@ -11,6 +11,7 @@ requirejs.config(
         Mesh: 'scripts/modules/Mesh',
         Material: 'scripts/modules/Material',
         ShaderManager: 'scripts/modules/ShaderManager',
+        MatrixStack: 'scripts/modules/MatrixStack',
 
         Actor: 'scripts/modules/Actor',
         GameWorld: 'scripts/modules/GameWorld',

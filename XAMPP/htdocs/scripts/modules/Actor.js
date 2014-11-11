@@ -1,5 +1,5 @@
 
-define( [ "Collections", "MathUtil", "Mesh" ], function( Collections, MathUtil )
+define( [ "Collections", "MathUtil", "Mesh", "MatrixStack" ], function( Collections, MathUtil )
 {
 	console.log( "Actor.js has finished loading" );
 });
@@ -24,21 +24,38 @@ Actor.prototype =
 
 	update : function( deltaSeconds )
 	{
-
+		this.updatePhysics( deltaSeconds );
 	}, 
+
+
+	updatePhysics : function( deltaSeconds )
+	{
+
+	},
 
 
 	render : function( deltaSeconds )
 	{
-		renderMesh( deltaSeconds );
+		this.applyMatrixTransformsAndPushToStack( deltaSeconds );
+		this.renderMesh( deltaSeconds );
 	},
 
 
 	renderMesh : function( deltaSeconds )
 	{
-		if ( meshComponent !== null )
+		if ( this.meshComponent !== null )
 		{
-			meshComponent.render( deltaSeconds );
+			this.meshComponent.render( deltaSeconds );
 		}
-	}
+	},
+
+
+	applyMatrixTransformsAndPushToStack : function( deltaSeconds )
+	{
+		var translationMatrix 	= mat4.create();
+		var rotationMatrix 		= mat4.create();
+
+		mat4.translate( translationMatrix, translationMatrix, this.m_position );
+		CBMatrixStack.applyModelMatrixAndCache( translationMatrix );
+	},
 }

@@ -1,5 +1,5 @@
 
-define( [], function()
+define( [ "MatrixStack", "MathUtil", "GLMatrix", "Collections" ], function( MatrixStack, MathUtil, Collections )
 {
 	console.log( "CBRenderer has finished loading" );
 });
@@ -8,11 +8,14 @@ define( [], function()
 var CBRenderer = ( function()
 {
 	// ====== Private Variables ====== //
-	this.renderer 				= null;
-	this.canvasDOMElement 		= null;
-	this.canvasID 				= '';
-	this.bWebGLContextValid 	= false;
-	this.bRendererInitialized 	= false;
+	this.renderer 						= null;
+	this.canvasDOMElement 				= null;
+	this.canvasID 						= '';
+
+	this.m_projectionMatrix 			= null;
+
+	this.bWebGLContextValid 			= false;
+	this.bRendererInitialized 			= false;
 
 	function CBRenderer()
 	{
@@ -37,6 +40,7 @@ var CBRenderer = ( function()
 			this.canvasDOMElement = this.getCanvasElementWithID();
 			this.setCanvasRenderingParameters();
 			this.renderer = this.getWebGLContext();
+			this.setDefaultRenderingSettings();
 
 			this.validateInitialization();
 
@@ -91,6 +95,20 @@ var CBRenderer = ( function()
 		}
 
 
+		CBRenderer.prototype.setDefaultRenderingSettings = function()
+		{
+			this.renderer.clearColor( 1.0, 0.0, 0.0, 0.0 );
+			this.renderer.enable( this.renderer.DEPTH_TEST );
+			this.renderer.depthFunc( this.renderer.LEQUAL );
+			this.renderer.clearDepth( 1.0 );
+
+			// PR: TODO:: Refactor this out of the renderer
+			// perspective = function (out, fovy, aspect, near, far)
+			this.m_projectionMatrix = mat4.create();
+			mat4.perspective( this.m_projectionMatrix, 50.6, ( this.canvasDOMElement.width / this.canvasDOMElement.height ), 0.1, 1000.0 );
+		}
+
+
 		CBRenderer.prototype.validateInitialization = function()
 		{
 			if ( this.renderer !== null )
@@ -103,6 +121,33 @@ var CBRenderer = ( function()
 				console.log( "Warning: WebGLContext could not be loaded from webgl or experimental-webgl. Browser likely does not support WebGL" );
 				this.bWebGLContextValid = false;
 			}
+		}
+
+
+		CBRenderer.prototype.applyProjectionMatrix = function()
+		{
+			CBMatrixStack.applyProjectionMatrixAndCache( this.m_projectionMatrix );
+		}
+
+
+		// ======== Rendering Interface ========== //
+		CBRenderer.prototype.renderScene = function( sceneToRender, deltaSeconds )
+		{
+			this.applyProjectionMatrix();
+
+			// START TEMP VIEW MATRIX TEST 
+			var testViewMatrix = mat4.create();
+			var testCameraPos = vec3.create();
+			testCameraPos[0] = 0.0;
+			testCameraPos[1] = 0.0;
+			testCameraPos[2]= -10.0;
+
+			mat4.translate( testViewMatrix, testViewMatrix, testCameraPos );
+			// END TEMP VIEW MATRIX TEST 
+
+			CBMatrixStack.applyViewMatrixAndCache( testViewMatrix );
+
+			sceneToRender.render( deltaSeconds );
 		}
 	}
 
