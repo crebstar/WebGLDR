@@ -105,7 +105,7 @@ var CBRenderer = ( function()
 			this.renderer.enable( this.renderer.DEPTH_TEST );
 			this.renderer.depthFunc( this.renderer.LEQUAL );
 			this.renderer.clearDepth( 1.0 );
-
+			
 			// PR: TODO:: Refactor this out of the renderer
 			// perspective = function (out, fovy, aspect, near, far)
 			this.m_projectionMatrix = mat4.create();

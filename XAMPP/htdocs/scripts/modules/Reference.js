@@ -1,7 +1,9 @@
 
-define( [ "require", "MathUtil", "Collections" ], function ( require, MathUtil, Collections ) {
+define( [ "require", "JQuery", "MathUtil", "Collections" ], function ( require, MathUtil, Collections ) {
   
 	console.log( "Define called for GameWorld" );
+
+    testWebWorkers();
 
 	loadWebGLContext();
 	loadShaders();
@@ -10,6 +12,32 @@ define( [ "require", "MathUtil", "Collections" ], function ( require, MathUtil, 
 
     return {}
 });
+
+
+function testWebWorkers()
+{
+    var dragonAsJSON = null;
+
+    $.ajax(
+    {
+        async: false, 
+        dataType : "text",
+        url: "DataFiles/dragon.json",
+        success: function( result ) 
+        {
+            console.log( "--- dragon.json has been loaded! --- " );
+            dragonAsJSON = JSON.parse( result );
+
+            var worker = new Worker( 'scripts/Demo/ParseJSON.js' );
+            worker.postMessage( result );
+            worker.addEventListener( 'message', function( event )
+            {
+                console.log( event.data );
+            });
+
+        }
+    });
+}
 
 
 var canvas = null;
