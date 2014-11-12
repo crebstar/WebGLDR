@@ -1,5 +1,5 @@
 
-define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "JQuery" ], function( require, CBRenderer )
+define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "JQuery" ], function( require, CBRenderer )
 {
 	console.log( "CBEngine.js has finished loading" );
 
@@ -10,9 +10,7 @@ define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "
 });
 
 
-var testActor = null;
-var dragonActor = null;
-var importTestActor = null;
+var gameWorld = null;
 
 function InitializeEngine()
 {
@@ -27,18 +25,7 @@ function InitializeEngine()
 
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 
-	// ======= TEST ======= //
-	var triangle_vertex =
-    [
-        -1,-1,0,
-        0,0,1,
-        1,-1,0,
-        1,1,0,
-        1,1,0,
-        1,0,0
-    ];
-
-    var triangle_faces = [0,1,2];
+	gameWorld = new GameWorld();
 
 	//testActor = new Actor();
 	//CreateMeshComponentWithVertDataForActor( testActor, triangle_vertex, triangle_faces, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
@@ -48,8 +35,10 @@ function InitializeEngine()
 	//CreateMeshComponentWithVertDataForActor( dragonActor, dragonAsJSON.vertices, dragonAsJSON.indices, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
 	var dataFileName = 'Datafiles/teapot.json';
 	var importTestMeshJSONData = LoadMeshDataFromJSONFile( dataFileName );
-	importTestActor = new Actor();
+	var importTestActor = new Actor();
 	CreateMeshComponentWithVertDataForActor( importTestActor, importTestMeshJSONData, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+
+	gameWorld.addActor( importTestActor );
 }
 
 
@@ -101,7 +90,7 @@ function RunFrame( timeSeconds )
 
 
 	// ==== Update ==== //
-	importTestActor.update( deltaSeconds );
+	gameWorld.update( deltaSeconds );
 	
 
 	// ==== Render ==== //
@@ -113,7 +102,7 @@ function RunFrame( timeSeconds )
 	sharedRenderer.renderer.viewport( 0.0, 0.0, sharedRenderer.canvasDOMElement.width, sharedRenderer.canvasDOMElement.height );
     sharedRenderer.renderer.clear( sharedRenderer.renderer.COLOR_BUFFER_BIT | sharedRenderer.renderer.DEPTH_BUFFER_BIT );
 
-	sharedRenderer.renderScene( importTestActor, deltaSeconds );
+	sharedRenderer.renderScene( gameWorld, deltaSeconds );
 
 	// ==== Clean up for next frame ==== //
 	sharedRenderer.renderer.flush();

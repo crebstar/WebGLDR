@@ -138,19 +138,7 @@ var CBRenderer = ( function()
 		CBRenderer.prototype.renderScene = function( sceneToRender, deltaSeconds )
 		{
 			this.applyProjectionMatrix();
-
-			// START TEMP VIEW MATRIX TEST 
-			var testViewMatrix = mat4.create();
-			var testCameraPos = vec3.create();
-			testCameraPos[0] = 0.0;
-			testCameraPos[1] = 0.0;
-			testCameraPos[2]= -160.0;
-
-			mat4.translate( testViewMatrix, testViewMatrix, testCameraPos );
-			// END TEMP VIEW MATRIX TEST 
-
-			CBMatrixStack.applyViewMatrixAndCache( testViewMatrix );
-
+			
 			sceneToRender.render( deltaSeconds );
 		}
 	}

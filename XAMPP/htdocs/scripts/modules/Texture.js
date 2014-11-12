@@ -51,8 +51,8 @@ Texture.prototype =
 
 			image.webglTexture = texture;
 
-			console.log( "ONLOAD BEING CALLED FROM loadTextureFromURL" );
-			console.log( image.webglTexture );
+			//console.log( "ONLOAD BEING CALLED FROM loadTextureFromURL" );
+			//console.log( image.webglTexture );
 
 			material.setDiffuseTexture( image.webglTexture );
 		};
