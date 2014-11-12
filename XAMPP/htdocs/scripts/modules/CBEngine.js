@@ -3,7 +3,7 @@ define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "
 {
 	console.log( "CBEngine.js has finished loading" );
 
-	loadDragonJson();
+	//loadDragonJson();
 	InitializeEngine();
 	InitializeGameDirector();
 	StartGameLoop();
@@ -12,6 +12,7 @@ define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "
 
 var testActor = null;
 var dragonActor = null;
+var importTestActor = null;
 
 function InitializeEngine()
 {
@@ -42,9 +43,13 @@ function InitializeEngine()
 	//testActor = new Actor();
 	//CreateMeshComponentWithVertDataForActor( testActor, triangle_vertex, triangle_faces, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
 
-	var dragonAsJSON = loadDragonJson();
-	dragonActor = new Actor();
-	CreateMeshComponentWithVertDataForActor( dragonActor, dragonAsJSON.vertices, dragonAsJSON.indices, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+	//var dragonAsJSON = loadDragonJson();
+	//dragonActor = new Actor();
+	//CreateMeshComponentWithVertDataForActor( dragonActor, dragonAsJSON.vertices, dragonAsJSON.indices, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+	var dataFileName = 'Datafiles/teapot.json';
+	var importTestMeshJSONData = LoadMeshDataFromJSONFile( dataFileName );
+	importTestActor = new Actor();
+	CreateMeshComponentWithVertDataForActor( importTestActor, importTestMeshJSONData, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
 }
 
 
@@ -96,7 +101,7 @@ function RunFrame( timeSeconds )
 
 
 	// ==== Update ==== //
-	dragonActor.update( deltaSeconds );
+	importTestActor.update( deltaSeconds );
 	
 
 	// ==== Render ==== //
@@ -108,7 +113,7 @@ function RunFrame( timeSeconds )
 	sharedRenderer.renderer.viewport( 0.0, 0.0, sharedRenderer.canvasDOMElement.width, sharedRenderer.canvasDOMElement.height );
     sharedRenderer.renderer.clear( sharedRenderer.renderer.COLOR_BUFFER_BIT | sharedRenderer.renderer.DEPTH_BUFFER_BIT );
 
-	sharedRenderer.renderScene( dragonActor, deltaSeconds );
+	sharedRenderer.renderScene( importTestActor, deltaSeconds );
 
 	// ==== Clean up for next frame ==== //
 	sharedRenderer.renderer.flush();
@@ -141,3 +146,5 @@ function loadDragonJson()
 
    	return dragonAsJSON;
 }
+
+

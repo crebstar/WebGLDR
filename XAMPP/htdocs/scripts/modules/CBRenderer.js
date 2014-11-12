@@ -144,7 +144,7 @@ var CBRenderer = ( function()
 			var testCameraPos = vec3.create();
 			testCameraPos[0] = 0.0;
 			testCameraPos[1] = 0.0;
-			testCameraPos[2]= -60.0;
+			testCameraPos[2]= -360.0;
 
 			mat4.translate( testViewMatrix, testViewMatrix, testCameraPos );
 			// END TEMP VIEW MATRIX TEST 

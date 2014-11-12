@@ -1,0 +1,37 @@
+{
+    "metadata" :
+    {
+        "formatVersion" : 3.1,
+        "sourceFile"    : "singlepoly.obj",
+        "generatedBy"   : "OBJConverter",
+        "vertices"      : 4,
+        "faces"         : 1,
+        "normals"       : 1,
+        "colors"        : 0,
+        "uvs"           : 4,
+        "materials"     : 1
+    },
+    "scale" : 1.000000,
+    "materials": [	{
+	"DbgColor" : 15658734,
+	"DbgIndex" : 0,
+	"DbgName" : "01___Default",
+	"colorAmbient" : [0.5882, 0.5882, 0.5882],
+	"colorDiffuse" : [0.5882, 0.5882, 0.5882],
+	"colorSpecular" : [0.0, 0.0, 0.0],
+	"illumination" : 2,
+	"mapAmbient" : "rgb.png",
+	"mapDiffuse" : "rgb.png",
+	"opticalDensity" : 1.5,
+	"specularCoef" : 10.0,
+	"transparency" : 0.0,
+	"transparent" : true
+	}],
+    "vertices": [-57.933600,48.339500,0.000000,-57.933600,-52.767500,-0.000000,63.099600,-52.767500,-0.000000,63.099600,48.339500,0.000000],
+    "morphTargets": [],
+    "morphColors": [],
+    "normals": [0,-0,1],
+    "colors": [],
+    "uvs": [[0,1,0,0,1,0,1,1]],
+    "faces": [1,0,1,2,3,0,0,1,2,3,0,0,0,0]
+}
