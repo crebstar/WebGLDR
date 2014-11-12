@@ -27,6 +27,7 @@ var CreateMeshComponentWithVertDataForActor = function( actorToCreateFor, import
 	actorToCreateFor.meshComponent = new MeshComponent();
 	actorToCreateFor.meshComponent.createMaterial( vertexShaderName, fragmentShaderName );
 	actorToCreateFor.meshComponent.createIBOFromJSONData( importMeshJSONData );
+	actorToCreateFor.meshComponent.material.loadDiffuseTextureAndSet( importMeshJSONData.diffuseTexture );
 }
 
 
@@ -163,14 +164,12 @@ MeshComponent.prototype =
 			new Float32Array( normalData ),
 			sharedRenderer.renderer.STATIC_DRAW );
 
-		/*
 		// Tex Coord Buffer
 		this.m_texCoordBuffer = sharedRenderer.renderer.createBuffer();
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, this.m_texCoordBuffer );
 		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ARRAY_BUFFER, 
 			new Float32Array( texCoordData ),
 			sharedRenderer.renderer.STATIC_DRAW );
-		*/
 
 		// Face Buffer
 		this.m_faceBuffer = sharedRenderer.renderer.createBuffer();

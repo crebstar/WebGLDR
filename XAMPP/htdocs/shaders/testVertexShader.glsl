@@ -10,7 +10,7 @@ uniform mat4 u_projectionMatrix;
 
 varying vec3 vColor;
 varying vec3 vNormal;
-varying vec2 vUV;
+varying vec2 vTexCoords;
 
 void main(void) 
 { 
@@ -19,5 +19,5 @@ void main(void)
 	//vColor = a_color;
 	vColor = vec3( 0.90, 0.10, 0.80 );
 	vNormal = a_normal;
-	vUV = a_textureCoords;
+	vTexCoords = a_textureCoords;
 }

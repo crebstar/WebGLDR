@@ -10,6 +10,7 @@ requirejs.config(
         CBRenderer : 'scripts/modules/CBRenderer',
         Mesh: 'scripts/modules/Mesh',
         Material: 'scripts/modules/Material',
+        Texture: 'scripts/modules/Texture',
         ShaderManager: 'scripts/modules/ShaderManager',
         MatrixStack: 'scripts/modules/MatrixStack',
 

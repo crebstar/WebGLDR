@@ -1,5 +1,5 @@
 
-define( [ "MathUtil", "Collections", "ShaderManager", "CBRenderer", "MatrixStack" ], function( MathUtil, Collections, ShaderManager, CBRenderer )
+define( [ "MathUtil", "Collections", "ShaderManager", "CBRenderer", "MatrixStack", "Texture" ], function( MathUtil, Collections, ShaderManager, CBRenderer )
 {
 	console.log( "Material.js has finished loading" );
 });
@@ -19,6 +19,7 @@ var NORMAL_ATTRIBUTE_NAME 			= "a_normal";
 var MODEL_MATRIX_UNIFORM_NAME 		= "u_modelMatrix";
 var VIEW_MATRIX_UNIFORM_NAME 		= "u_viewMatrix";
 var PROJECTION_MATRIX_UNIFORM_NAME 	= "u_projectionMatrix";
+var DIFFUSE_TEXTURE_UNIFORM_NAME 	= "s_diffuseTexture";
 
 
 // ===== Classes ===== //
@@ -27,6 +28,7 @@ var Material = function()
 	this.m_shaderProgram 		= null;
 	this.m_materialAttributes 	= new MaterialAttributes();
 	this.m_shaderUniformParams 	= new Map();
+	this.m_diffuseTexture 		= null;
 }
 
 
@@ -42,14 +44,22 @@ Material.prototype =
 		var modelUniformParam 			= new ShaderUniform( this );
 		var viewUniformParam 			= new ShaderUniform( this );
 		var projectionUniformParam 		= new ShaderUniform( this );
-
+		
 		modelUniformParam.setUniformParameter( MODEL_MATRIX_UNIFORM_NAME, identityMatrix );
 		viewUniformParam.setUniformParameter( VIEW_MATRIX_UNIFORM_NAME, identityMatrix );
 		projectionUniformParam.setUniformParameter( PROJECTION_MATRIX_UNIFORM_NAME, identityMatrix );
-
+		
 		this.m_shaderUniformParams.set( modelUniformParam.m_uniformName, modelUniformParam );
 		this.m_shaderUniformParams.set( viewUniformParam.m_uniformName, viewUniformParam );
 		this.m_shaderUniformParams.set( projectionUniformParam.m_uniformName, projectionUniformParam );
+		
+
+		// ====== TEXTURES ====== //
+		var diffuseUniformParam 		= new ShaderUniform( this );
+
+		diffuseUniformParam.setUniformParameter( DIFFUSE_TEXTURE_UNIFORM_NAME, UNIFORM_NOT_LOCATED );
+
+		this.m_shaderUniformParams.set( diffuseUniformParam.m_uniformName, diffuseUniformParam );
 	},
 
 
@@ -77,7 +87,29 @@ Material.prototype =
 
 		this.updateMVPUniforms();
 		this.enableAndSetAttributes( meshComponent );
+		this.bindTextures( meshComponent );
+	},
 
+
+	loadDiffuseTextureAndSet : function( diffuseTextureURL )
+	{
+		var diffuseTexture = new Texture();
+		diffuseTexture.loadTextureFromURL( diffuseTextureURL, this );
+	},
+
+
+	setDiffuseTexture : function( diffuseTexture )
+	{
+		var diffuseUniform 		= this.m_shaderUniformParams.get( DIFFUSE_TEXTURE_UNIFORM_NAME, null );
+
+		var sharedRenderer = CBRenderer.getSharedRenderer();
+
+		if ( diffuseUniform !== null )
+		{
+			sharedRenderer.renderer.uniform1i( diffuseUniform.m_uniformLocation, diffuseTexture );
+		}
+
+		this.m_diffuseTexture = diffuseTexture;
 	},
 
 
@@ -119,6 +151,18 @@ Material.prototype =
 	disableAttribues : function()
 	{
 		// PR: May not be needed for WebGL : http://stackoverflow.com/questions/12427880/is-it-important-to-call-gldisablevertexattribarray
+	},
+
+
+	bindTextures : function( meshComponent )
+	{
+		var sharedRenderer = CBRenderer.getSharedRenderer();
+
+		 if ( this.m_diffuseTexture ) 
+		 {
+	    	sharedRenderer.renderer.activeTexture( sharedRenderer.renderer.TEXTURE0 );
+	      	sharedRenderer.renderer.bindTexture( sharedRenderer.renderer.TEXTURE_2D, this.m_diffuseTexture );
+    	}
 	},
 
 	// ===== Event and Lifecycle Functions ===== //
@@ -206,11 +250,13 @@ MaterialAttributes.prototype =
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 		this.m_positionAttribute.m_attributeLocation 		= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_positionAttribute.m_attributeName );
 		this.m_normalAttribute.m_attributeLocation 			= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_normalAttribute.m_attributeName );
-		console.log( this.m_normalAttribute.m_attributeLocation );
+		this.m_textureCoordsAttribute.m_attributeLocation  	= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_textureCoordsAttribute.m_attributeName );
+
 		//this.m_colorAttribute.m_attributeLocation 	 		= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_colorAttribute.m_attributeName );
-		//this.m_textureCoordsAttribute.m_attributeLocation  	= sharedRenderer.renderer.getAttribLocation( shaderProgram, this.m_textureCoordsAttribute.m_attributeName );
+		
 
 		//console.log( this.m_positionAttribute.m_attributeLocation );
+		//console.log( this.m_normalAttribute.m_attributeLocation );
 		//console.log( this.m_colorAttribute.m_attributeLocation );
 		//console.log( this.m_textureCoordsAttribute.m_attributeLocation );
 	},
@@ -222,8 +268,8 @@ MaterialAttributes.prototype =
 
 		sharedRenderer.renderer.enableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
 		sharedRenderer.renderer.enableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
+		sharedRenderer.renderer.enableVertexAttribArray( this.m_textureCoordsAttribute.m_attributeLocation );
 		//sharedRenderer.renderer.enableVertexAttribArray( this.m_colorAttribute.m_attributeName );
-		//sharedRenderer.renderer.enableVertexAttribArray( this.m_textureCoordsAttribute.m_attributeLocation );
 	},
 
 
@@ -238,10 +284,12 @@ MaterialAttributes.prototype =
 
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, meshComponent.m_normalBuffer );
 		sharedRenderer.renderer.vertexAttribPointer( this.m_normalAttribute.m_attributeLocation, 3, sharedRenderer.renderer.FLOAT, false, 0, 0 );
-		//sharedRenderer.renderer.vertexAttribPointer( this.m_textureCoordsAttribute.m_attributeLocation, 2, sharedRenderer.renderer.FLOAT, false, stride, ( Float32Array.BYTES_PER_ELEMENT * 6) );
+
+		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, meshComponent.m_texCoordBuffer );
+		sharedRenderer.renderer.vertexAttribPointer( this.m_textureCoordsAttribute.m_attributeLocation, 2, sharedRenderer.renderer.FLOAT, false, 0, 0 );
 
 		//sharedRenderer.renderer.vertexAttribPointer( this.m_colorAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+3), 3*4 );
 		
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, meshComponent.m_faceBuffer );
-	}
+	},
 }
