@@ -1,4 +1,6 @@
 
+//importScripts( '../lib/JQuery/jquery-2.1.1.js' );
+
 self.addEventListener( 'message', function( event )
 {
 	var textToJSONConversion = null;
