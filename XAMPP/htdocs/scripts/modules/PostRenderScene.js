@@ -38,7 +38,7 @@ PostRenderScene.prototype =
 	{
 		this.setUpSceneForRendering( deltaSeconds );
 
-		this.renderActors( deltaSeconds );
+		this.renderActors( deltaSeconds, GBufferTarget );
 	},
 
 
@@ -48,13 +48,14 @@ PostRenderScene.prototype =
 	},
 
 
-	renderActors : function( deltaSeconds )
+	renderActors : function( deltaSeconds, GBufferTarget )
 	{
 		var actor = null;
 
 		for ( var i = 0; i < this.m_gameActors.length; ++i )
 		{
 			actor = this.m_gameActors[i];
+			actor.meshComponent.material.m_diffuseTexture = GBufferTarget.m_diffuseComponentTexture;
 			actor.render( deltaSeconds );
 		}
 	},

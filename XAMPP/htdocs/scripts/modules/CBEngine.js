@@ -37,48 +37,50 @@ function InitializeEngine()
 	gameWorld = new GameWorld();
 	postRenderScene = new PostRenderScene();
 
+	// TEMP FOR TESTING
 	// Quad Verts
-	quadVertices = 
+
+	var quadWidth = 300.0;
+	var quadHeight = 150.0;
+
+	var quadVertices = 
 	[
-         200.0,  200.0,  0.0,
-        -200.0,  200.0,  0.0,
-         200.0, -200.0,  0.0,
-        -200.0, -200.0,  0.0
+         quadWidth,  quadHeight,    0.0,
+        -quadWidth,  quadHeight,    0.0,
+         quadWidth, -quadHeight,  0.0,
+        -quadWidth, -quadHeight,  0.0
     ];
+   
+    var quadTexCoords = 
+    [
+      1.0, 1.0,
+      0.0, 1.0,
+      1.0, 0.0,
+      0.0, 0.0,
+    ];
+	
 
-
-    quadTexCoords = 
-    [
-   	  0.0, 0.0,
-      1.0, 0.0,
-      1.0, 1.0,
-      0.0, 1.0,
-    ];
-
-    quadFaces =
+    var quadFaces =
     [
     	0, 1, 2,     
-    	0, 2, 3,
-    	0, 1, 3
+    	1, 2, 3,
     ];
 
     var sharedRenderer = CBRenderer.getSharedRenderer();
 
     diffuseQuadActor = new Actor();
-    diffuseQuadActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.50;
-    diffuseQuadActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.50;
+    diffuseQuadActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.77;
+    diffuseQuadActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
  
     // CreateMeshComponent2DQuad = function( actorToCreateFor, vertData, texCoordData, faceData, vertexShaderName, fragmentShaderName )
     CreateMeshComponent2DQuad( diffuseQuadActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
 
     postRenderScene.addActor( diffuseQuadActor );
 
-	//testActor = new Actor();
-	//CreateMeshComponentWithVertDataForActor( testActor, triangle_vertex, triangle_faces, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
-
 	//var dragonAsJSON = loadDragonJson();
 	//dragonActor = new Actor();
 	//CreateMeshComponentWithVertDataForActor( dragonActor, dragonAsJSON.vertices, dragonAsJSON.indices, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+
 	var dataFileName = 'Datafiles/teapot.json';
 	var importTestMeshJSONData = LoadMeshDataFromJSONFile( dataFileName );
 	var importTestActor = new Actor();
@@ -151,9 +153,6 @@ function RunFrame( timeSeconds )
 	if ( bUseGBuffer )
 	{
 		sharedRenderer.renderSceneToGBuffer( gameWorld, def_GBuffer, deltaSeconds );
-
-		sharedRenderer.renderer.viewport( 0.0, 0.0, sharedRenderer.canvasDOMElement.width, sharedRenderer.canvasDOMElement.height );
-    	sharedRenderer.renderer.clear( sharedRenderer.renderer.COLOR_BUFFER_BIT | sharedRenderer.renderer.DEPTH_BUFFER_BIT );
 
 		sharedRenderer.renderScene( gameWorld, deltaSeconds );
 

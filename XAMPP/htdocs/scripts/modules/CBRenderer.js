@@ -94,8 +94,8 @@ var CBRenderer = ( function()
 				return;
 			}
 
-			this.canvasDOMElement.width = window.innerWidth;
-			this.canvasDOMElement.height = window.innerHeight;
+			this.canvasDOMElement.width = 2048;
+			this.canvasDOMElement.height = 1024;
 		}
 
 
@@ -149,7 +149,7 @@ var CBRenderer = ( function()
 		CBRenderer.prototype.renderScene = function( sceneToRender, deltaSeconds )
 		{
 			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
-			
+
 			this.applyProjectionMatrix();
 			
 			sceneToRender.render( deltaSeconds );
@@ -166,10 +166,20 @@ var CBRenderer = ( function()
 
 			GBufferTarget.bindGBufferFrameBuffer();
 
+			this.renderer.clearColor( 0.1, 0.1, 0.1, 0.0 );
+
+			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
+
 			sceneToRender.render( deltaSeconds );
+
+			this.renderer.flush();
 
 			GBufferTarget.m_dirty = false;
 			GBufferTarget.unbindGBufferFrameBuffer();
+
+			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
+			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
+    		
 
 			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
 		}
