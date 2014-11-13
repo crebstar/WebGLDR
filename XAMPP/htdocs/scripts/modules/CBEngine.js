@@ -17,6 +17,7 @@ var postRenderScene 	= null;
 var bUseGBuffer 		= false;
 
 var diffuseQuadActor 	= null; 
+var depthBufferActor 	= null;
 
 function InitializeEngine()
 {
@@ -71,11 +72,16 @@ function InitializeEngine()
     diffuseQuadActor = new Actor();
     diffuseQuadActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.77;
     diffuseQuadActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
- 
-    // CreateMeshComponent2DQuad = function( actorToCreateFor, vertData, texCoordData, faceData, vertexShaderName, fragmentShaderName )
+
+    depthBufferActor = new Actor();
+    depthBufferActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.18;
+    depthBufferActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
+
     CreateMeshComponent2DQuad( diffuseQuadActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
+    CreateMeshComponent2DQuad( depthBufferActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
 
     postRenderScene.addActor( diffuseQuadActor );
+    //postRenderScene.addActor( depthBufferActor );
 
 	//var dragonAsJSON = loadDragonJson();
 	//dragonActor = new Actor();

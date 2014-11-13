@@ -77,6 +77,9 @@ var CBRenderer = ( function()
 				var EXT = webGLContext.getExtension( "OES_element_index_uint" ) ||
       				webGLContext.getExtension( "MOZ_OES_element_index_uint" ) ||
         			webGLContext.getExtension( "WEBKIT_OES_element_index_uint" );
+
+        		var DepthEXT = webGLContext.getExtension( "WEBKIT_WEBGL_depth_texture" ) ||
+        			webGLContext.getExtension( "MOZ_WEBGL_depth_texture" );
 			}
 			catch ( webGLError )
 			{
@@ -104,6 +107,7 @@ var CBRenderer = ( function()
 			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
 			this.renderer.enable( this.renderer.DEPTH_TEST );
 			this.renderer.depthFunc( this.renderer.LEQUAL );
+			this.renderer.depthMask( true );
 			this.renderer.clearDepth( 1.0 );
 			
 			// PR: TODO:: Refactor this out of the renderer
@@ -151,6 +155,10 @@ var CBRenderer = ( function()
 			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 
 			this.applyProjectionMatrix();
+
+			this.renderer.enable( this.renderer.DEPTH_TEST );
+			this.renderer.depthMask( true );
+			this.renderer.clearDepth( 1.0 );
 			
 			sceneToRender.render( deltaSeconds );
 
@@ -166,6 +174,9 @@ var CBRenderer = ( function()
 
 			GBufferTarget.bindGBufferFrameBuffer();
 
+			this.renderer.enable( this.renderer.DEPTH_TEST );
+			this.renderer.depthMask( true );
+			this.renderer.clearDepth( 1.0 );
 			this.renderer.clearColor( 0.1, 0.1, 0.1, 0.0 );
 
 			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
@@ -180,7 +191,6 @@ var CBRenderer = ( function()
 			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
 			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
     		
-
 			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
 		}
 
@@ -190,6 +200,9 @@ var CBRenderer = ( function()
 			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 
 			this.applyOrthoMatrix();
+
+			this.renderer.disable( this.renderer.DEPTH_TEST );
+			this.renderer.depthMask( false );
 
 			sceneToRender.render( deltaSeconds, GBufferTarget );
 

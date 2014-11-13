@@ -15,6 +15,7 @@ var GBuffer = function()
 	this.m_renderBuffer 				= null;
 
 	this.m_diffuseComponentTexture 		= INVALID_GBUFFER_TEXTURE_ID;
+	this.m_depthComponentTexture 		= INVALID_GBUFFER_TEXTURE_ID;
 
 	this.m_dirty 						= true;
 	this.m_initialized 					= false;
@@ -42,21 +43,6 @@ GBuffer.prototype =
 
 	initializeFrameBuffer : function()
 	{
-		/*
-		var fb=GL.createFramebuffer();
-		GL.bindFramebuffer(GL.FRAMEBUFFER, fb);
-
-		  var rb=GL.createRenderbuffer();
-		  GL.bindRenderbuffer(GL.RENDERBUFFER, rb);
-		  GL.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16 , 512, 512);
-
-		  var texture_rtt=GL.createTexture();
-		  GL.bindTexture(GL.TEXTURE_2D, texture_rtt);
-		  GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-		  GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-		  GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, 512, 512, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
-		 */
-
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
 		// Frame Buffer
@@ -86,6 +72,8 @@ GBuffer.prototype =
 			sharedRenderer.renderer.TEXTURE_MIN_FILTER, 
 			sharedRenderer.renderer.LINEAR );
 
+		sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_WRAP_S, sharedRenderer.renderer.CLAMP_TO_EDGE);
+		sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_WRAP_T, sharedRenderer.renderer.CLAMP_TO_EDGE);
 		
 		sharedRenderer.renderer.texImage2D( 
 			sharedRenderer.renderer.TEXTURE_2D,
@@ -98,22 +86,51 @@ GBuffer.prototype =
 		 	sharedRenderer.renderer.UNSIGNED_BYTE, 
 		 	null );
 
-		
-		/*
-		  GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture_rtt, 0);
+		// Depth
+		this.m_depthComponentTexture = sharedRenderer.renderer.createTexture();
+		sharedRenderer.renderer.bindTexture( sharedRenderer.renderer.TEXTURE_2D, this.m_depthComponentTexture );
 
-		  GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.RENDERBUFFER, rb);
+		sharedRenderer.renderer.texParameteri( 
+			sharedRenderer.renderer.TEXTURE_2D,
+		 	sharedRenderer.renderer.TEXTURE_MAG_FILTER,
+		  	sharedRenderer.renderer.NEAREST );
 
-		  GL.bindTexture(GL.TEXTURE_2D, null);
-		  GL.bindRenderbuffer(GL.RENDERBUFFER, null);
-		  GL.bindFramebuffer(GL.FRAMEBUFFER, null);
-		*/
+		sharedRenderer.renderer.texParameteri( 
+			sharedRenderer.renderer.TEXTURE_2D, 
+			sharedRenderer.renderer.TEXTURE_MIN_FILTER, 
+			sharedRenderer.renderer.NEAREST );
+
+		sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_WRAP_S, sharedRenderer.renderer.CLAMP_TO_EDGE);
+		sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_WRAP_T, sharedRenderer.renderer.CLAMP_TO_EDGE);
+
+		sharedRenderer.renderer.texImage2D( 
+			sharedRenderer.renderer.TEXTURE_2D,
+		 	0,
+		 	sharedRenderer.renderer.DEPTH_COMPONENT,
+		 	sharedRenderer.canvasDOMElement.width,
+		 	sharedRenderer.canvasDOMElement.height,
+		 	0,
+		 	sharedRenderer.renderer.DEPTH_COMPONENT,
+		 	sharedRenderer.renderer.UNSIGNED_SHORT, 
+		 	null );
+
+		// gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, size, size, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
+
 		// FrameBuffer
+		// Diffuse
 		sharedRenderer.renderer.framebufferTexture2D( 
 			sharedRenderer.renderer.FRAMEBUFFER,
 		 	sharedRenderer.renderer.COLOR_ATTACHMENT0, 
 		 	sharedRenderer.renderer.TEXTURE_2D, 
 		 	this.m_diffuseComponentTexture, 
+		 	0 );
+
+		// Depth
+		sharedRenderer.renderer.framebufferTexture2D( 
+			sharedRenderer.renderer.FRAMEBUFFER,
+		 	sharedRenderer.renderer.DEPTH_ATTACHMENT, 
+		 	sharedRenderer.renderer.TEXTURE_2D, 
+		 	this.m_depthComponentTexture, 
 		 	0 );
 
 		// RenderBuffer
@@ -122,6 +139,7 @@ GBuffer.prototype =
 		 	sharedRenderer.renderer.DEPTH_ATTACHMENT, 
 		 	sharedRenderer.renderer.RENDERBUFFER, 
 		 	this.m_renderBuffer );
+		
 
 		// Unbind buffers and textures
 		sharedRenderer.renderer.bindTexture( sharedRenderer.renderer.TEXTURE_2D, null );
