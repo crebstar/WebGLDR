@@ -1,5 +1,5 @@
 
-define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "JQuery" ], function( require, CBRenderer )
+define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "GBuffer", "JQuery" ], function( require, CBRenderer )
 {
 	console.log( "CBEngine.js has finished loading" );
 
@@ -10,7 +10,9 @@ define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "
 });
 
 
-var gameWorld = null;
+var gameWorld 		= null;
+var def_GBuffer 	= null;
+var bUseGBuffer 	= false;
 
 function InitializeEngine()
 {
@@ -24,6 +26,9 @@ function InitializeEngine()
 	console.log( "Renderer is initialized and ready!" );
 
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+
+	def_GBuffer = new GBuffer();
+	def_GBuffer.initializeGBuffer();
 
 	gameWorld = new GameWorld();
 
@@ -102,7 +107,15 @@ function RunFrame( timeSeconds )
 	sharedRenderer.renderer.viewport( 0.0, 0.0, sharedRenderer.canvasDOMElement.width, sharedRenderer.canvasDOMElement.height );
     sharedRenderer.renderer.clear( sharedRenderer.renderer.COLOR_BUFFER_BIT | sharedRenderer.renderer.DEPTH_BUFFER_BIT );
 
-	sharedRenderer.renderScene( gameWorld, deltaSeconds );
+	if ( bUseGBuffer )
+	{
+		sharedRenderer.renderSceneToGBuffer( gameWorld, def_GBuffer, deltaSeconds );
+	}
+	else
+	{
+		sharedRenderer.renderScene( gameWorld, deltaSeconds );
+	}
+	
 
 	// ==== Clean up for next frame ==== //
 	sharedRenderer.renderer.flush();
@@ -135,5 +148,16 @@ function loadDragonJson()
 
    	return dragonAsJSON;
 }
+
+
+var onKeyDownCB = function(e)
+{
+	if ( String.fromCharCode( e.keyCode ) == 'G' )
+	{
+		bUseGBuffer = !bUseGBuffer;
+	}
+}
+
+window.addEventListener( "keydown", onKeyDownCB );
 
 

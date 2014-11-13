@@ -11,6 +11,7 @@ requirejs.config(
         Mesh: 'scripts/modules/Mesh',
         Material: 'scripts/modules/Material',
         Texture: 'scripts/modules/Texture',
+        GBuffer: 'scripts/modules/GBuffer',
         ShaderManager: 'scripts/modules/ShaderManager',
         MatrixStack: 'scripts/modules/MatrixStack',
 

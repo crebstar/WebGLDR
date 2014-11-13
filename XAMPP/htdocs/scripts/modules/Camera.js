@@ -6,6 +6,17 @@ define( [ "require", "MathUtil", "Collections" ], function( require, MathUtil, C
 
 
 var keysDown = {};
+
+var Input = 
+{
+	Mouse:
+	{
+		lastX: 0,
+		lastY: 0,
+		pressed: false
+	}
+}
+
 var CAMERA_MAX_VELOCITY_PER_SECOND = 40.0;
 
 var Camera = function()
@@ -111,7 +122,32 @@ var onKeyUp = function(e)
 }
 
 
+var onMouseDown = function(e) 
+{
+	Input.Mouse.pressed = true;
+}
+
+
+var onMouseMove = function(e) 
+{
+	if ( Input.Mouse.pressed )
+	{
+		Input.Mouse.lastX = e.clientX;
+		Input.Mouse.lastY = e.clientY;
+	}
+}
+
+
+var onMouseUp = function(e)
+{
+
+}
+
+
 window.addEventListener( "keydown", onKeyDown );
 window.addEventListener( "keyup", onKeyUp );
+window.addEventListener( "mousedown", onMouseDown );
+window.addEventListener( "mouseup", onMouseUp );
+window.addEventListener( "mousemove", onMouseMove );
 
 

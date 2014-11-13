@@ -140,6 +140,23 @@ var CBRenderer = ( function()
 			this.applyProjectionMatrix();
 			
 			sceneToRender.render( deltaSeconds );
+
+			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
+		}
+
+
+		CBRenderer.prototype.renderSceneToGBuffer = function( sceneToRender, GBufferTarget, deltaSeconds )
+		{
+			this.applyProjectionMatrix();
+
+			GBufferTarget.bindGBufferFrameBuffer();
+
+			sceneToRender.render( deltaSeconds );
+
+			GBufferTarget.m_dirty = false;
+			GBufferTarget.unbindGBufferFrameBuffer();
+
+			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
 		}
 	}
 
