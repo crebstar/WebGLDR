@@ -1,5 +1,5 @@
 
-define( [ "MatrixStack", "MathUtil", "GLMatrix", "Collections" ], function( MatrixStack, MathUtil, Collections )
+define( [ "MatrixStack", "MathUtil", "GLMatrix", "Collections", "PostRenderScene" ], function( MatrixStack, MathUtil, Collections )
 {
 	console.log( "CBRenderer has finished loading" );
 });
@@ -134,9 +134,22 @@ var CBRenderer = ( function()
 		}
 
 
+		CBRenderer.prototype.applyOrthoMatrix = function()
+		{
+			var orthoMatrix = mat4.create();
+
+			// function (out, left, right, bottom, top, near, far)
+			mat4.ortho( orthoMatrix, 0.0, this.canvasDOMElement.width, 0.0, this.canvasDOMElement.height, 0.0, 1.0 );
+
+			CBMatrixStack.applyOrthoMatrixAndCache( orthoMatrix );
+		}
+
+
 		// ======== Rendering Interface ========== //
 		CBRenderer.prototype.renderScene = function( sceneToRender, deltaSeconds )
 		{
+			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+			
 			this.applyProjectionMatrix();
 			
 			sceneToRender.render( deltaSeconds );
@@ -147,6 +160,8 @@ var CBRenderer = ( function()
 
 		CBRenderer.prototype.renderSceneToGBuffer = function( sceneToRender, GBufferTarget, deltaSeconds )
 		{
+			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+
 			this.applyProjectionMatrix();
 
 			GBufferTarget.bindGBufferFrameBuffer();
@@ -155,6 +170,18 @@ var CBRenderer = ( function()
 
 			GBufferTarget.m_dirty = false;
 			GBufferTarget.unbindGBufferFrameBuffer();
+
+			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
+		}
+
+
+		CBRenderer.prototype.renderPostRenderScene = function( sceneToRender, GBufferTarget, deltaSeconds )
+		{
+			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+
+			this.applyOrthoMatrix();
+
+			sceneToRender.render( deltaSeconds, GBufferTarget );
 
 			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
 		}

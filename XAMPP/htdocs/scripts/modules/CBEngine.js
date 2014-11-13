@@ -1,5 +1,6 @@
 
-define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "GBuffer", "JQuery" ], function( require, CBRenderer )
+define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "GBuffer", "PostRenderScene", "JQuery" ], 
+	function( require, CBRenderer )
 {
 	console.log( "CBEngine.js has finished loading" );
 
@@ -10,9 +11,12 @@ define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "
 });
 
 
-var gameWorld 		= null;
-var def_GBuffer 	= null;
-var bUseGBuffer 	= false;
+var gameWorld 			= null;
+var def_GBuffer 		= null;
+var postRenderScene 	= null;
+var bUseGBuffer 		= false;
+
+var diffuseQuadActor 	= null; 
 
 function InitializeEngine()
 {
@@ -31,6 +35,43 @@ function InitializeEngine()
 	def_GBuffer.initializeGBuffer();
 
 	gameWorld = new GameWorld();
+	postRenderScene = new PostRenderScene();
+
+	// Quad Verts
+	quadVertices = 
+	[
+         200.0,  200.0,  0.0,
+        -200.0,  200.0,  0.0,
+         200.0, -200.0,  0.0,
+        -200.0, -200.0,  0.0
+    ];
+
+
+    quadTexCoords = 
+    [
+   	  0.0, 0.0,
+      1.0, 0.0,
+      1.0, 1.0,
+      0.0, 1.0,
+    ];
+
+    quadFaces =
+    [
+    	0, 1, 2,     
+    	0, 2, 3,
+    	0, 1, 3
+    ];
+
+    var sharedRenderer = CBRenderer.getSharedRenderer();
+
+    diffuseQuadActor = new Actor();
+    diffuseQuadActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.50;
+    diffuseQuadActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.50;
+ 
+    // CreateMeshComponent2DQuad = function( actorToCreateFor, vertData, texCoordData, faceData, vertexShaderName, fragmentShaderName )
+    CreateMeshComponent2DQuad( diffuseQuadActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
+
+    postRenderScene.addActor( diffuseQuadActor );
 
 	//testActor = new Actor();
 	//CreateMeshComponentWithVertDataForActor( testActor, triangle_vertex, triangle_faces, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
@@ -110,6 +151,13 @@ function RunFrame( timeSeconds )
 	if ( bUseGBuffer )
 	{
 		sharedRenderer.renderSceneToGBuffer( gameWorld, def_GBuffer, deltaSeconds );
+
+		sharedRenderer.renderer.viewport( 0.0, 0.0, sharedRenderer.canvasDOMElement.width, sharedRenderer.canvasDOMElement.height );
+    	sharedRenderer.renderer.clear( sharedRenderer.renderer.COLOR_BUFFER_BIT | sharedRenderer.renderer.DEPTH_BUFFER_BIT );
+
+		sharedRenderer.renderScene( gameWorld, deltaSeconds );
+
+		sharedRenderer.renderPostRenderScene( postRenderScene, def_GBuffer, deltaSeconds );
 	}
 	else
 	{
@@ -155,6 +203,15 @@ var onKeyDownCB = function(e)
 	if ( String.fromCharCode( e.keyCode ) == 'G' )
 	{
 		bUseGBuffer = !bUseGBuffer;
+
+		if ( bUseGBuffer )
+		{
+			console.log( "CBEngine now rendering WITH GBuffer" );
+		}
+		else
+		{
+			console.log( "CBEngine now rendering WITHOUT GBuffer" );
+		}
 	}
 }
 

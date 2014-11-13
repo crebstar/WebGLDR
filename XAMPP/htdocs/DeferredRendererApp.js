@@ -12,6 +12,7 @@ requirejs.config(
         Material: 'scripts/modules/Material',
         Texture: 'scripts/modules/Texture',
         GBuffer: 'scripts/modules/GBuffer',
+        PostRenderScene: 'scripts/modules/PostRenderScene',
         ShaderManager: 'scripts/modules/ShaderManager',
         MatrixStack: 'scripts/modules/MatrixStack',
 

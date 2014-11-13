@@ -142,15 +142,19 @@ Material.prototype =
 	{
 		if ( this.m_materialAttributes !== null )
 		{
-			this.m_materialAttributes.enableAttributes();
+			this.m_materialAttributes.enableAttributes( meshComponent );
 			this.m_materialAttributes.setAttributePointers( meshComponent );
 		}
 	},
 
 
-	disableAttribues : function()
+	disableAttribues : function( meshComponent )
 	{
 		// PR: May not be needed for WebGL : http://stackoverflow.com/questions/12427880/is-it-important-to-call-gldisablevertexattribarray
+		if ( this.m_materialAttributes !== null )
+		{
+			this.m_materialAttributes.disableAttribues( meshComponent );
+		}
 	},
 
 
@@ -262,12 +266,18 @@ MaterialAttributes.prototype =
 	},
 
 
-	enableAttributes : function()
+	enableAttributes : function( meshComponent )
 	{
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
 		sharedRenderer.renderer.enableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
-		sharedRenderer.renderer.enableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
+
+		// Temp hack
+		if ( !meshComponent.m_Is2D )
+		{
+			sharedRenderer.renderer.enableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
+		}
+
 		sharedRenderer.renderer.enableVertexAttribArray( this.m_textureCoordsAttribute.m_attributeLocation );
 		//sharedRenderer.renderer.enableVertexAttribArray( this.m_colorAttribute.m_attributeName );
 	},
@@ -282,14 +292,32 @@ MaterialAttributes.prototype =
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, meshComponent.m_vertexBuffer );
 		sharedRenderer.renderer.vertexAttribPointer( this.m_positionAttribute.m_attributeLocation, 3, sharedRenderer.renderer.FLOAT, false, 0, 0  );
 
-		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, meshComponent.m_normalBuffer );
-		sharedRenderer.renderer.vertexAttribPointer( this.m_normalAttribute.m_attributeLocation, 3, sharedRenderer.renderer.FLOAT, false, 0, 0 );
-
+		if ( !meshComponent.m_Is2D )
+		{
+			sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, meshComponent.m_normalBuffer );
+			sharedRenderer.renderer.vertexAttribPointer( this.m_normalAttribute.m_attributeLocation, 3, sharedRenderer.renderer.FLOAT, false, 0, 0 );
+		}
+		
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, meshComponent.m_texCoordBuffer );
 		sharedRenderer.renderer.vertexAttribPointer( this.m_textureCoordsAttribute.m_attributeLocation, 2, sharedRenderer.renderer.FLOAT, false, 0, 0 );
 
 		//sharedRenderer.renderer.vertexAttribPointer( this.m_colorAttribute.m_attributeName, 3, sharedRenderer.renderer.FLOAT, false, 4*(3+3), 3*4 );
 		
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, meshComponent.m_faceBuffer );
+	},
+
+
+	disableAttribues : function( meshComponent )
+	{
+		var sharedRenderer = CBRenderer.getSharedRenderer();
+
+		sharedRenderer.renderer.disableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
+
+		if ( !meshComponent.m_Is2D )
+		{
+			sharedRenderer.renderer.disableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
+		}
+
+		sharedRenderer.renderer.disableVertexAttribArray( this.m_textureCoordsAttribute.m_attributeLocation );
 	},
 }

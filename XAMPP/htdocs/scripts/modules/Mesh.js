@@ -31,6 +31,20 @@ var CreateMeshComponentWithVertDataForActor = function( actorToCreateFor, import
 }
 
 
+var CreateMeshComponent2DQuad = function( actorToCreateFor, vertData, texCoordData, faceData, vertexShaderName, fragmentShaderName )
+{
+	if ( actorToCreateFor == null )
+	{
+		return null;
+	}
+
+	actorToCreateFor.meshComponent = new MeshComponent();
+	actorToCreateFor.meshComponent.m_Is2D = true;
+	actorToCreateFor.meshComponent.createMaterial( vertexShaderName, fragmentShaderName );
+	actorToCreateFor.meshComponent.createIBOFor2DMesh( vertData, texCoordData, faceData );
+}
+
+
 function LoadMeshDataFromJSONFile( fileName )
 {
 	var meshAsJSON = null;
@@ -60,6 +74,8 @@ var MeshComponent = function()
 	this.m_texCoordBuffer 	= null;
 	this.m_faceBuffer 		= null;
 	this.m_NPoints 			= 0;
+
+	this.m_Is2D 			= false;
 }
 
 
@@ -80,6 +96,8 @@ MeshComponent.prototype =
 		// PR: This call will NOT work with multiple buffers per mesh
 		//this.bindBuffers(); 
 		this.renderMesh();
+
+		this.material.disableAttribues( this );
 	},
 
 
@@ -131,6 +149,32 @@ MeshComponent.prototype =
 			sharedRenderer.renderer.STATIC_DRAW );
 
 		// Face Buffer
+		this.m_faceBuffer = sharedRenderer.renderer.createBuffer();
+		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, this.m_faceBuffer );
+		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, 
+			new Uint32Array( faceData ),
+			sharedRenderer.renderer.STATIC_DRAW );
+
+		this.m_NPoints = faceData.length;
+	},
+
+
+	createIBOFor2DMesh : function( vertData, texCoordData, faceData )
+	{
+		var sharedRenderer = CBRenderer.getSharedRenderer();
+
+		this.m_vertexBuffer = sharedRenderer.renderer.createBuffer();
+		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, this.m_vertexBuffer );
+		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ARRAY_BUFFER, 
+			new Float32Array( vertData ),
+			sharedRenderer.renderer.STATIC_DRAW );
+
+		this.m_texCoordBuffer = sharedRenderer.renderer.createBuffer();
+		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, this.m_texCoordBuffer );
+		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ARRAY_BUFFER, 
+			new Float32Array( texCoordData ),
+			sharedRenderer.renderer.STATIC_DRAW );
+
 		this.m_faceBuffer = sharedRenderer.renderer.createBuffer();
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, this.m_faceBuffer );
 		sharedRenderer.renderer.bufferData( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, 

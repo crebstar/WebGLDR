@@ -86,6 +86,13 @@ MatrixStack.prototype =
 	},
 
 
+	applyOrthoMatrixAndCache : function( orthoMatrix )
+	{
+		this.m_currentProjectionMatrix = orthoMatrix;
+		this.applyTransformAndPushToStack( orthoMatrix );
+	},
+
+
 	applyModelMatrixAndCache : function( modelMatrix )
 	{
 		this.m_currentModelMatrix = modelMatrix;
