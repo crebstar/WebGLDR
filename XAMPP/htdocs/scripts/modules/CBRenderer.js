@@ -80,6 +80,12 @@ var CBRenderer = ( function()
 
         		var DepthEXT = webGLContext.getExtension( "WEBKIT_WEBGL_depth_texture" ) ||
         			webGLContext.getExtension( "MOZ_WEBGL_depth_texture" );
+
+        		if ( !DepthEXT )
+        		{
+        			console.log( "Warning: Depth Texture extension is not supported with the current browser!" );
+        		}
+
 			}
 			catch ( webGLError )
 			{
@@ -113,7 +119,7 @@ var CBRenderer = ( function()
 			// PR: TODO:: Refactor this out of the renderer
 			// perspective = function (out, fovy, aspect, near, far)
 			this.m_projectionMatrix = mat4.create();
-			mat4.perspective( this.m_projectionMatrix, 50.6, ( this.canvasDOMElement.width / this.canvasDOMElement.height ), 0.1, 1000.0 );
+			mat4.perspective( this.m_projectionMatrix, 50.6, ( this.canvasDOMElement.width / this.canvasDOMElement.height ), 1.0, 100.0 );
 		}
 
 

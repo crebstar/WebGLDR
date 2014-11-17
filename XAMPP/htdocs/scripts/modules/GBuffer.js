@@ -50,6 +50,7 @@ GBuffer.prototype =
 		sharedRenderer.renderer.bindFramebuffer( sharedRenderer.renderer.FRAMEBUFFER, this.m_frameBuffer );
 
 		// Render Buffer
+		/*
 		this.m_renderBuffer = sharedRenderer.renderer.createRenderbuffer();
 		sharedRenderer.renderer.bindRenderbuffer( sharedRenderer.renderer.RENDERBUFFER, this.m_renderBuffer );
 		sharedRenderer.renderer.renderbufferStorage( 
@@ -57,6 +58,7 @@ GBuffer.prototype =
 		 	sharedRenderer.renderer.DEPTH_COMPONENT16,
 		 	sharedRenderer.canvasDOMElement.width,
 		 	sharedRenderer.canvasDOMElement.height );
+		*/
 
 		// Diffuse Component
 		this.m_diffuseComponentTexture = sharedRenderer.renderer.createTexture();
@@ -133,17 +135,21 @@ GBuffer.prototype =
 		 	this.m_depthComponentTexture, 
 		 	0 );
 
+		/*
 		// RenderBuffer
 		sharedRenderer.renderer.framebufferRenderbuffer( 
 			sharedRenderer.renderer.FRAMEBUFFER,
 		 	sharedRenderer.renderer.DEPTH_ATTACHMENT, 
 		 	sharedRenderer.renderer.RENDERBUFFER, 
 		 	this.m_renderBuffer );
-		
+		*/
 
+		console.log( "FrameBuffer status after initialization: " );
+		console.log( sharedRenderer.renderer.checkFramebufferStatus( sharedRenderer.renderer.FRAMEBUFFER) == sharedRenderer.renderer.FRAMEBUFFER_COMPLETE );
+		
 		// Unbind buffers and textures
 		sharedRenderer.renderer.bindTexture( sharedRenderer.renderer.TEXTURE_2D, null );
-		sharedRenderer.renderer.bindRenderbuffer( sharedRenderer.renderer.RENDERBUFFER, null );
+		//sharedRenderer.renderer.bindRenderbuffer( sharedRenderer.renderer.RENDERBUFFER, null );
 		sharedRenderer.renderer.bindFramebuffer( sharedRenderer.renderer.FRAMEBUFFER, null );
 	},
 

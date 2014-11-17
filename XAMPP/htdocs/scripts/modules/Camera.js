@@ -27,7 +27,7 @@ var Camera = function()
 
 	this.m_position[0] 				= 0.0;
 	this.m_position[1] 				= 0.0;
-	this.m_position[2] 				= -160.0;
+	this.m_position[2] 				= -80.0;
 }
 
 

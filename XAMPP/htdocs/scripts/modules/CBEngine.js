@@ -81,7 +81,7 @@ function InitializeEngine()
     CreateMeshComponent2DQuad( depthBufferActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
 
     postRenderScene.addActor( diffuseQuadActor );
-    //postRenderScene.addActor( depthBufferActor );
+    postRenderScene.addActor( depthBufferActor );
 
 	//var dragonAsJSON = loadDragonJson();
 	//dragonActor = new Actor();
