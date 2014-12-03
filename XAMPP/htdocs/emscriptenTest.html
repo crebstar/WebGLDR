@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<script src="emscriptenTest.js" > </script>
+
+<body>
+
+</body>
+
+<script>
+
+	var f = new Module.Foo();
+	f.setVal( 5 );
+	document.body.innerHTML += "Foo: " + f.getVal() + "<br/>";
+
+	var b = new Module.Bar( 126.5 );
+	document.body.innerHTML += "Bar: " + b.get_myVal() + "<br/>";
+
+</script>  
+
+</html>

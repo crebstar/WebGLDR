@@ -9,6 +9,7 @@ define( [ "require", "GLMatrix"], function ( require, GLMatrix ) {
 });
 
 
+
 function RangeMapFloat( inRangeStart, inRangeEnd, outRangeStart, outRangeEnd, inValue )
 {
 	var outValue;

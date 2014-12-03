@@ -119,7 +119,7 @@ var CBRenderer = ( function()
 			// PR: TODO:: Refactor this out of the renderer
 			// perspective = function (out, fovy, aspect, near, far)
 			this.m_projectionMatrix = mat4.create();
-			mat4.perspective( this.m_projectionMatrix, 50.6, ( this.canvasDOMElement.width / this.canvasDOMElement.height ), 1.0, 100.0 );
+			mat4.perspective( this.m_projectionMatrix, 50.6, ( this.canvasDOMElement.width / this.canvasDOMElement.height ), 1.0, 300.0 );
 		}
 
 
@@ -135,6 +135,21 @@ var CBRenderer = ( function()
 				console.log( "Warning: WebGLContext could not be loaded from webgl or experimental-webgl. Browser likely does not support WebGL" );
 				this.bWebGLContextValid = false;
 			}
+		}
+
+
+		CBRenderer.prototype.getCenterOfCanvas = function()
+		{
+			var canvasCenter = vec2.create();
+			canvasCenter[0] = 0;
+			canvasCenter[1] = 0;
+			if ( this.canvasDOMElement !== null )
+			{
+				canvasCenter[0] = this.canvasDOMElement.width * 0.50;
+				canvasCenter[1] = this.canvasDOMElement.height * 0.50;
+			}
+
+			return canvasCenter;
 		}
 
 

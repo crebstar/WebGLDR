@@ -8,6 +8,7 @@ requirejs.config(
 
         CBEngine : 'scripts/modules/CBEngine',
         CBRenderer : 'scripts/modules/CBRenderer',
+        InputManager : 'scripts/modules/InputManager',
         Mesh: 'scripts/modules/Mesh',
         Material: 'scripts/modules/Material',
         Texture: 'scripts/modules/Texture',

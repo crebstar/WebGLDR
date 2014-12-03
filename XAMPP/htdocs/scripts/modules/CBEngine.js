@@ -1,12 +1,10 @@
 
-define( [ "require", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "GBuffer", "PostRenderScene", "JQuery" ], 
+define( [ "require", "InputManager", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "GBuffer", "PostRenderScene", "JQuery" ], 
 	function( require, CBRenderer )
 {
 	console.log( "CBEngine.js has finished loading" );
 
-	//loadDragonJson();
 	InitializeEngine();
-	InitializeGameDirector();
 	StartGameLoop();
 });
 
@@ -19,6 +17,7 @@ var bUseGBuffer 		= false;
 var diffuseQuadActor 	= null; 
 var depthBufferActor 	= null;
 
+
 function InitializeEngine()
 {
 	var bRendererInitializedAndReady = LoadRenderer();
@@ -30,6 +29,7 @@ function InitializeEngine()
 
 	console.log( "Renderer is initialized and ready!" );
 
+	RequestPointerLock();
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 
 	def_GBuffer = new GBuffer();
@@ -96,9 +96,18 @@ function InitializeEngine()
 }
 
 
-function InitializeGameDirector()
+function RequestPointerLock()
 {
+	var sharedRenderer = CBRenderer.getSharedRenderer();
+	sharedRenderer.canvasDOMElement.requestPointerLock = sharedRenderer.canvasDOMElement.requestPointerLock ||
+			    sharedRenderer.canvasDOMElement.mozRequestPointerLock ||
+			    sharedRenderer.canvasDOMElement.webkitRequestPointerLock;
 
+	sharedRenderer.canvasDOMElement.requestPointerLock();
+
+	sharedRenderer.canvasDOMElement.exitPointerLock = sharedRenderer.canvasDOMElement.exitPointerLock ||
+			   sharedRenderer.canvasDOMElement.mozExitPointerLock ||
+			   sharedRenderer.canvasDOMElement.webkitExitPointerLock;
 }
 
 
@@ -141,7 +150,7 @@ function RunFrame( timeSeconds )
 	previousTimeSeconds = timeSeconds;
 	
 	// ==== INPUT ==== //
-
+	UpdateInput( deltaSeconds );
 
 	// ==== Update ==== //
 	gameWorld.update( deltaSeconds );
@@ -174,6 +183,7 @@ function RunFrame( timeSeconds )
 	sharedRenderer.renderer.flush();
 
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+	MouseStopped();
 
 	window.requestAnimationFrame( RunFrame );
 }
@@ -217,6 +227,13 @@ var onKeyDownCB = function(e)
 		{
 			console.log( "CBEngine now rendering WITHOUT GBuffer" );
 		}
+	}
+
+	if ( String.fromCharCode( e.keyCode ) == 'P' )
+	{
+		bUsePointerLock = !bUsePointerLock;
+		var sharedRenderer = CBRenderer.getSharedRenderer();
+		sharedRenderer.canvasDOMElement.requestPointerLock();
 	}
 }
 
