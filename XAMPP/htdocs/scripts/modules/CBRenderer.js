@@ -9,6 +9,7 @@ var CBRenderer = ( function()
 {
 	// ====== Private Variables ====== //
 	this.renderer 						= null;
+	this.drawBuffers 					= null;
 	this.canvasDOMElement 				= null;
 	this.canvasID 						= '';
 
@@ -75,11 +76,28 @@ var CBRenderer = ( function()
 				webGLContext = this.canvasDOMElement.getContext( "webgl" ) || this.canvasDOMElement.getContext( "experimental-webgl" );
 				// PR: to support UInt32 indices for face buffer
 				var EXT = webGLContext.getExtension( "OES_element_index_uint" ) ||
-      				webGLContext.getExtension( "MOZ_OES_element_index_uint" ) ||
+      				webGLContext.getExtension( "OES_element_index_uint" ) ||
         			webGLContext.getExtension( "WEBKIT_OES_element_index_uint" );
 
         		var DepthEXT = webGLContext.getExtension( "WEBKIT_WEBGL_depth_texture" ) ||
-        			webGLContext.getExtension( "MOZ_WEBGL_depth_texture" );
+        			webGLContext.getExtension( "WEBGL_depth_texture" );
+
+        			
+        		var floatTextureExt = webGLContext.getExtension( "OES_texture_float_linear" ) ||
+        			webGLContext.getExtension( "OES_texture_half_float_linear" ) ||
+        			webGLContext.getExtension( "WEBGL_color_buffer_float" ) ||
+        			webGLContext.getExtension( "EXT_color_buffer_half_float" );
+        			
+
+        		//http://stackoverflow.com/questions/18795477/webgl-draw-buffers-not-supported-on-latest-firefox-chrome
+        		var drawBuffersExtension = webGLContext.getExtension( 'WEBGL_draw_buffers' ) || 
+        			webGLContext.getExtension( "GL_EXT_draw_buffers" ) ||
+        			webGLContext.getExtension( "EXT_draw_buffers" );
+
+        		this.drawBuffers = drawBuffersExtension;
+
+        		console.log( "DRAW BUFFERS: " );
+        		console.log( drawBuffersExtension );
 
         		if ( !DepthEXT )
         		{
