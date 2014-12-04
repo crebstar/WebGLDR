@@ -51,22 +51,9 @@ PostRenderScene.prototype =
 	renderActors : function( deltaSeconds, GBufferTarget )
 	{
 		var actor = null;
-
 		for ( var i = 0; i < this.m_gameActors.length; ++i )
 		{
 			actor = this.m_gameActors[i];
-
-			// PR TODO:: Remove hack
-			// Super hacks for presentation demo
-			if ( i == 0 )
-			{
-				actor.meshComponent.material.m_diffuseTexture = GBufferTarget.m_diffuseComponentTexture;
-			}
-			else if ( i == 1 )
-			{
-				actor.meshComponent.material.m_diffuseTexture = GBufferTarget.m_depthComponentTexture;
-			}
-
 			actor.render( deltaSeconds );
 		}
 	},

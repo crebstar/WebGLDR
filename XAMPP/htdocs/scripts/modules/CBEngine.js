@@ -9,13 +9,10 @@ define( [ "require", "InputManager", "CBRenderer", "MathUtil", "MatrixStack", "A
 });
 
 
-var gameWorld 			= null;
-var def_GBuffer 		= null;
-var postRenderScene 	= null;
-var bUseGBuffer 		= false;
-
-var diffuseQuadActor 	= null; 
-var depthBufferActor 	= null;
+var gameWorld 						= null;
+var def_GBuffer 					= null;
+var debugRenderTargetBuffersScene 	= null;
+var bUseGBuffer 					= false;
 
 
 function InitializeEngine()
@@ -36,11 +33,14 @@ function InitializeEngine()
 	def_GBuffer.initializeGBuffer();
 
 	gameWorld = new GameWorld();
-	postRenderScene = new PostRenderScene();
+	debugRenderTargetBuffersScene = new PostRenderScene();
 
-	// TEMP FOR TESTING
-	// Quad Verts
+	CreateDeferredRendereringActors();
+}
 
+
+function CreateDeferredRendereringActors()
+{
 	var quadWidth = 300.0;
 	var quadHeight = 150.0;
 
@@ -69,19 +69,41 @@ function InitializeEngine()
 
     var sharedRenderer = CBRenderer.getSharedRenderer();
 
-    diffuseQuadActor = new Actor();
-    diffuseQuadActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.77;
-    diffuseQuadActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
+    var renderTargetOneActor 	= null; 
+    var renderTargetTwoActor 	= null;
+    var renderTargetThreeActor  = null;
+	var depthBufferActor 		= null;
+
+    renderTargetOneActor = new Actor();
+    renderTargetOneActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.77;
+    renderTargetOneActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
+
+    renderTargetTwoActor = new Actor();
+    renderTargetTwoActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.77;
+    renderTargetTwoActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.40;
+
+    renderTargetThreeActor = new Actor();
+    renderTargetThreeActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.18;
+    renderTargetThreeActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.40;
 
     depthBufferActor = new Actor();
     depthBufferActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.18;
     depthBufferActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
 
-    CreateMeshComponent2DQuad( diffuseQuadActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
+    CreateMeshComponent2DQuad( renderTargetOneActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
+    CreateMeshComponent2DQuad( renderTargetTwoActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
+    CreateMeshComponent2DQuad( renderTargetThreeActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
     CreateMeshComponent2DQuad( depthBufferActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
 
-    postRenderScene.addActor( diffuseQuadActor );
-    postRenderScene.addActor( depthBufferActor );
+    renderTargetOneActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_diffuseComponentTexture;
+    renderTargetTwoActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_renderTargetTwoTexture;
+    renderTargetThreeActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_renderTargetThreeTexture;
+    depthBufferActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_depthComponentTexture;
+
+    debugRenderTargetBuffersScene.addActor( renderTargetOneActor );
+    debugRenderTargetBuffersScene.addActor( renderTargetTwoActor );
+    debugRenderTargetBuffersScene.addActor( renderTargetThreeActor );
+    debugRenderTargetBuffersScene.addActor( depthBufferActor );
 
 	//var dragonAsJSON = loadDragonJson();
 	//dragonActor = new Actor();
@@ -90,7 +112,7 @@ function InitializeEngine()
 	var dataFileName = 'Datafiles/teapot.json';
 	var importTestMeshJSONData = LoadMeshDataFromJSONFile( dataFileName );
 	var importTestActor = new Actor();
-	CreateMeshComponentWithVertDataForActor( importTestActor, importTestMeshJSONData, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
+	CreateMeshComponentWithVertDataForActor( importTestActor, importTestMeshJSONData, 'GeometryVertexShader.glsl', 'GeometryFragmentShader.glsl' );
 
 	gameWorld.addActor( importTestActor );
 }
@@ -155,7 +177,6 @@ function RunFrame( timeSeconds )
 	// ==== Update ==== //
 	gameWorld.update( deltaSeconds );
 	
-
 	// ==== Render ==== //
 
 	// TEST
@@ -171,7 +192,7 @@ function RunFrame( timeSeconds )
 
 		sharedRenderer.renderScene( gameWorld, deltaSeconds );
 
-		sharedRenderer.renderPostRenderScene( postRenderScene, def_GBuffer, deltaSeconds );
+		sharedRenderer.renderPostRenderScene( debugRenderTargetBuffersScene, def_GBuffer, deltaSeconds );
 	}
 	else
 	{

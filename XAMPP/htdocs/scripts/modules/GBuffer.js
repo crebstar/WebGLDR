@@ -86,7 +86,7 @@ GBuffer.prototype =
 		 	sharedRenderer.canvasDOMElement.height,
 		 	0,
 		 	sharedRenderer.renderer.RGBA,
-		 	sharedRenderer.renderer.UNSIGNED_BYTE, 
+		 	sharedRenderer.renderer.FLOAT, 
 		 	null );
 
 
@@ -125,7 +125,7 @@ GBuffer.prototype =
 		 	sharedRenderer.canvasDOMElement.height,
 		 	0,
 		 	sharedRenderer.renderer.RGBA,
-		 	sharedRenderer.renderer.UNSIGNED_BYTE, 
+		 	sharedRenderer.renderer.FLOAT, 
 		 	null );
 
 
@@ -164,7 +164,7 @@ GBuffer.prototype =
 		 	sharedRenderer.canvasDOMElement.height,
 		 	0,
 		 	sharedRenderer.renderer.RGBA,
-		 	sharedRenderer.renderer.UNSIGNED_BYTE, 
+		 	sharedRenderer.renderer.FLOAT, 
 		 	null );
 
 

@@ -88,6 +88,8 @@ var CBRenderer = ( function()
         			webGLContext.getExtension( "WEBGL_color_buffer_float" ) ||
         			webGLContext.getExtension( "EXT_color_buffer_half_float" );
         			
+        		var floatExt = webGLContext.getExtension("OES_texture_float");
+   					
 
         		//http://stackoverflow.com/questions/18795477/webgl-draw-buffers-not-supported-on-latest-firefox-chrome
         		var drawBuffersExtension = webGLContext.getExtension( 'WEBGL_draw_buffers' ) || 
@@ -96,7 +98,8 @@ var CBRenderer = ( function()
 
         		this.drawBuffers = drawBuffersExtension;
 
-        		console.log( "DRAW BUFFERS: " );
+        		console.log( floatExt );
+        		console.log( floatTextureExt );
         		console.log( drawBuffersExtension );
 
         		if ( !DepthEXT )
