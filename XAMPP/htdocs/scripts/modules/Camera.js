@@ -5,7 +5,7 @@ define( [ "require", "InputManager", "CBEngine", "MathUtil", "Collections" ], fu
 });
 
 
-var CAMERA_MAX_VELOCITY_PER_SECOND 			= 40.0;
+var CAMERA_MAX_VELOCITY_PER_SECOND 			= 120.0;
 var CAMERA_ROTATIONAL_VELOCITY_PER_SECOND 	= 2.50;
 
 
@@ -15,9 +15,9 @@ var Camera = function()
 	this.m_orientationDegrees 		= vec3.create();
 	this.m_velocity 				= vec3.create();
 
-	this.m_position[0] 				= 0.0;
-	this.m_position[1] 				= 0.0;
-	this.m_position[2] 				= 80.0;
+	this.m_position[0] 				= 200.0;
+	this.m_position[1] 				= 50.0;
+	this.m_position[2] 				= 780.0;
 
 	this.m_orientationDegrees[0] 	= 0.0; 
 	this.m_orientationDegrees[1] 	= 0.0;

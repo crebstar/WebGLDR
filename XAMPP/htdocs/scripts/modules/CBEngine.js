@@ -13,6 +13,7 @@ var gameWorld 						= null;
 var def_GBuffer 					= null;
 var debugRenderTargetBuffersScene 	= null;
 var bUseGBuffer 					= false;
+var fpsCounterDOMElement 			= null;
 
 
 function InitializeEngine()
@@ -27,6 +28,7 @@ function InitializeEngine()
 	console.log( "Renderer is initialized and ready!" );
 
 	RequestPointerLock();
+	InitializeFPSCounter();
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 
 	def_GBuffer = new GBuffer();
@@ -39,6 +41,12 @@ function InitializeEngine()
 }
 
 
+function InitializeFPSCounter()
+{
+	fpsCounterDOMElement = document.getElementById("fps_counter");
+}
+
+
 function CreateDeferredRendereringActors()
 {
 	var quadWidth = 300.0;
@@ -46,8 +54,8 @@ function CreateDeferredRendereringActors()
 
 	var quadVertices = 
 	[
-         quadWidth,  quadHeight,    0.0,
-        -quadWidth,  quadHeight,    0.0,
+         quadWidth,  quadHeight,  0.0,
+        -quadWidth,  quadHeight,  0.0,
          quadWidth, -quadHeight,  0.0,
         -quadWidth, -quadHeight,  0.0
     ];
@@ -109,12 +117,35 @@ function CreateDeferredRendereringActors()
 	//dragonActor = new Actor();
 	//CreateMeshComponentWithVertDataForActor( dragonActor, dragonAsJSON.vertices, dragonAsJSON.indices, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
 
+	var geomVertexShader = 'GeometryVertexShader.glsl';
+	var geomFragShader = 'GeometryFragmentShader.glsl';
 	var dataFileName = 'Datafiles/teapot.json';
-	var importTestMeshJSONData = LoadMeshDataFromJSONFile( dataFileName );
-	var importTestActor = new Actor();
-	CreateMeshComponentWithVertDataForActor( importTestActor, importTestMeshJSONData, 'GeometryVertexShader.glsl', 'GeometryFragmentShader.glsl' );
+	var importMeshJSONData = LoadMeshDataFromJSONFile( dataFileName );
 
-	gameWorld.addActor( importTestActor );
+	var numColumns 				= 8;
+	var numRows 				= 8;
+	var numHeightRows 			= 3;
+	var rowOffsetAmount 		= 50.00;
+	var columnOffsetAmount 		= 50.00;
+	var heightOffsetAmount 		= 50.0;
+
+	for ( var i = 0; i < numColumns; ++i )
+	{
+		for ( var j = 0; j < numRows; ++j )
+		{
+			for ( var k = 0; k < numHeightRows; ++k )
+			{
+				var teapotActor = new Actor();
+
+				CreateMeshComponentWithVertDataForActor( teapotActor, importMeshJSONData, geomVertexShader, geomFragShader );
+				teapotActor.m_position[0] = i * columnOffsetAmount;
+				teapotActor.m_position[1] = k * heightOffsetAmount;
+				teapotActor.m_position[2] = j * rowOffsetAmount;
+
+				gameWorld.addActor( teapotActor );
+			}
+		}
+	}
 }
 
 
@@ -170,6 +201,8 @@ function RunFrame( timeSeconds )
 {
 	var deltaSeconds = millisToSecondsRatio * ( timeSeconds - previousTimeSeconds );
 	previousTimeSeconds = timeSeconds;
+
+	UpdateFPSCounter( deltaSeconds );
 	
 	// ==== INPUT ==== //
 	UpdateInput( deltaSeconds );
@@ -207,6 +240,27 @@ function RunFrame( timeSeconds )
 	MouseStopped();
 
 	window.requestAnimationFrame( RunFrame );
+}
+
+var fpsTime 				= 0.0;
+var fpsFrames 				= 0;
+var frequencyOfFPSUpdate 	= 2;
+
+function UpdateFPSCounter( deltaSeconds )
+{
+	fpsTime += deltaSeconds;
+    ++fpsFrames;
+
+    if ( fpsTime > frequencyOfFPSUpdate ) 
+    {
+
+      var fps = fpsFrames / fpsTime;
+
+      fpsCounterDOMElement.innerHTML = Math.round( fps ) + " FPS";
+
+      fpsTime 		= 0.0;
+      fpsFrames 	= 0;
+    }
 }
 
 

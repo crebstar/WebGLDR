@@ -205,7 +205,7 @@ GBuffer.prototype =
 		 	null );
 
 		// FrameBuffer
-		// Diffuse
+		// RT_ONE
 		sharedRenderer.renderer.framebufferTexture2D( 
 			sharedRenderer.renderer.FRAMEBUFFER,
 		 	sharedRenderer.drawBuffers.COLOR_ATTACHMENT0_WEBGL, 

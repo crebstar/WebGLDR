@@ -140,7 +140,7 @@ var CBRenderer = ( function()
 			// PR: TODO:: Refactor this out of the renderer
 			// perspective = function (out, fovy, aspect, near, far)
 			this.m_projectionMatrix = mat4.create();
-			mat4.perspective( this.m_projectionMatrix, 50.6, ( this.canvasDOMElement.width / this.canvasDOMElement.height ), 1.0, 300.0 );
+			mat4.perspective( this.m_projectionMatrix, 50.6, ( this.canvasDOMElement.width / this.canvasDOMElement.height ), 1.0, 1000.0 );
 		}
 
 
