@@ -3,9 +3,16 @@ define( [ "LBuffer", "GLMatrix", "MathUtil", "MatrixStack", "Collections", "CBRe
 	console.log( "PointLight.js has finished loading" );
 });
 
+// Point Light Shaders
+var POINT_LIGHT_VERTEX_SHADER_NAME 			= "PointLightVertexShader.glsl";
+var POINT_LIGHT_FRAGMENT_SHADER_NAME 		= "PointLightFragmentShader.glsl";
 
-var POINT_LIGHT_VERTEX_SHADER_NAME 		= "PointLightVertexShader.glsl";
-var POINT_LIGHT_FRAGMENT_SHADER_NAME 	= "PointLightFragmentShader.glsl";
+// Point Light Uniforms
+var LIGHT_WORLD_POSITION_UNIFORM 			= "u_lightWorldPosition";
+var LIGHT_COLOR_AND_BRIGHTNESS_UNIFORM 		= "u_lightColorAndBrightness";
+var LIGHT_OUTER_RADIUS_UNIFORM 				= "u_lightOuterRadius";
+var LIGHT_INNER_RADIUS_UNIFORM 			 	= "u_lightInnerRadius";
+
 
 var PointLight = function( outerRadius )
 {
@@ -65,15 +72,54 @@ PointLight.prototype =
 
 	updateUniforms : function( GBufferTarget )
 	{
+		this.updateLightUniformData();
 		this.updateGBufferTargetUniforms( GBufferTarget );
 		this.updateMVPAndScreenUniforms();
+	},
+	
+
+	updateLightUniformData : function()
+	{
+		var lightWorldPos 				= this.m_shaderUniformParams.get( LIGHT_WORLD_POSITION_UNIFORM, null );
+		var lightColorAndBrightness 	= this.m_shaderUniformParams.get( LIGHT_COLOR_AND_BRIGHTNESS_UNIFORM, null );
+		var lightOuterRadius 			= this.m_shaderUniformParams.get( LIGHT_OUTER_RADIUS_UNIFORM, null );
+		var lightInnerRadius 			= this.m_shaderUniformParams.get( LIGHT_INNER_RADIUS_UNIFORM, null );
+
+		var sharedRenderer = CBRenderer.getSharedRenderer();
+
+		if ( lightWorldPos !== null )
+		{
+			sharedRenderer.renderer.uniform3f( lightWorldPos.m_uniformLocation, 
+				this.m_position[0], 
+				this.m_position[1], 
+				this.m_position[2] );
+		}
+
+		if ( lightColorAndBrightness !== null )
+		{
+			sharedRenderer.renderer.uniform4f( lightColorAndBrightness.m_uniformLocation, 
+				this.m_colorAndBrightness[0], 
+				this.m_colorAndBrightness[1], 
+				this.m_colorAndBrightness[2], 
+				this.m_colorAndBrightness[3] );
+		}
+
+		if ( lightOuterRadius !== null )
+		{
+			sharedRenderer.renderer.uniform1f( lightOuterRadius.m_uniformLocation, this.m_outerRadius );
+		}
+
+		if ( lightInnerRadius !== null )
+		{
+			sharedRenderer.renderer.uniform1f( lightInnerRadius.m_uniformLocation, this.m_innerRadius );
+		}
 	},
 
 
 	updateGBufferTargetUniforms : function( GBufferTarget )
 	{
-		var rtTwoUniform 		= this.m_shaderUniformParams.get( RENDER_TARGET_TWO_UNIFORM_NAME, null );
-		var rtThreeUniform 		= this.m_shaderUniformParams.get( RENDER_TARGET_THREE_UNIFORM_NAME, null );
+		var rtTwoUniform 				= this.m_shaderUniformParams.get( RENDER_TARGET_TWO_UNIFORM_NAME, null );
+		var rtThreeUniform 				= this.m_shaderUniformParams.get( RENDER_TARGET_THREE_UNIFORM_NAME, null );
 
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
@@ -268,14 +314,32 @@ PointLight.prototype =
 		this.m_shaderUniformParams.set( inverseScreenHeightParam.m_uniformName, inverseScreenHeightParam );
 
 		// ====== TEXTURES ====== //
-		var renderTargetTwoParam 		= new ShaderUniform( this );
-		var renderTargetThreeParam 		= new ShaderUniform( this );
+		var renderTargetTwoParam 						= new ShaderUniform( this );
+		var renderTargetThreeParam 						= new ShaderUniform( this );
 
 		renderTargetTwoParam.setUniformParameter( RENDER_TARGET_TWO_UNIFORM_NAME, UNIFORM_NOT_LOCATED );
 		this.m_shaderUniformParams.set( renderTargetTwoParam.m_uniformName, renderTargetTwoParam );
 
 		renderTargetThreeParam.setUniformParameter( RENDER_TARGET_THREE_UNIFORM_NAME, UNIFORM_NOT_LOCATED );
 		this.m_shaderUniformParams.set( renderTargetThreeParam.m_uniformName, renderTargetThreeParam );
+
+		// ====== POINT LIGHT DATA ====== //
+		var pointLightPositionParam 					= new ShaderUniform( this );
+		var pointLightColorAndBrightnessParam 			= new ShaderUniform( this );
+		var pointLightOuterRadiusParam 					= new ShaderUniform( this );
+		var pointLightInnerRadiusParam 					= new ShaderUniform( this );
+
+		pointLightPositionParam.setUniformParameter( LIGHT_WORLD_POSITION_UNIFORM, UNIFORM_NOT_LOCATED );
+		this.m_shaderUniformParams.set( pointLightPositionParam.m_uniformName, pointLightPositionParam );
+
+		pointLightColorAndBrightnessParam.setUniformParameter( LIGHT_COLOR_AND_BRIGHTNESS_UNIFORM, UNIFORM_NOT_LOCATED );
+		this.m_shaderUniformParams.set( pointLightColorAndBrightnessParam.m_uniformName, pointLightColorAndBrightnessParam );
+
+		pointLightOuterRadiusParam.setUniformParameter( LIGHT_OUTER_RADIUS_UNIFORM, UNIFORM_NOT_LOCATED );
+		this.m_shaderUniformParams.set( pointLightOuterRadiusParam.m_uniformName, pointLightOuterRadiusParam );
+
+		pointLightInnerRadiusParam.setUniformParameter( LIGHT_INNER_RADIUS_UNIFORM, UNIFORM_NOT_LOCATED );
+		this.m_shaderUniformParams.set( pointLightInnerRadiusParam.m_uniformName, pointLightInnerRadiusParam );
 	},
 
 

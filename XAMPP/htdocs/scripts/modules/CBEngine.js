@@ -42,13 +42,23 @@ function InitializeEngine()
 
 	var pl = new PointLight( 30.0 );
 	pl.initializePointLight();
+	pl.m_position[0] = 30.0;
+	pl.m_position[1] = 10.0;
+	pl.m_position[2] = 0.0;
+	pl.m_colorAndBrightness[0] = 0.0;
+	pl.m_colorAndBrightness[1] = 1.0;
+	pl.m_colorAndBrightness[2] = 0.0;
+	pl.m_colorAndBrightness[3] = 1.0; 
 	sceneLights.push( pl );
 
-	
-	var pl1 = new PointLight( 30.0 );
+	var pl1 = new PointLight( 40.0 );
 	pl1.initializePointLight();
 	pl1.m_position[0] = 30.0;
 	pl1.m_position[1] = 10.0;
+	pl1.m_colorAndBrightness[0] = 1.0;
+	pl1.m_colorAndBrightness[1] = 0.0;
+	pl1.m_colorAndBrightness[2] = 1.0;
+	pl1.m_colorAndBrightness[3] = 1.0; 
 	sceneLights.push( pl1 );
 	
 	gameWorld = new GameWorld();
