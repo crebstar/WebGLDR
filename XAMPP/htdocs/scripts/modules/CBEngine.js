@@ -1,16 +1,19 @@
 
-define( [ "require", "InputManager", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "GBuffer", "PostRenderScene", "JQuery" ], 
+define( [ "require", "InputManager", "CBStorage", "CBRenderer", "MathUtil", "MatrixStack", "Actor", "Mesh", "GameWorld", "GBuffer", "LBuffer", "PointLight", "PostRenderScene", "JQuery" ], 
 	function( require, CBRenderer )
 {
 	console.log( "CBEngine.js has finished loading" );
 
 	InitializeEngine();
 	StartGameLoop();
+
 });
 
 
 var gameWorld 						= null;
 var def_GBuffer 					= null;
+var def_LBuffer 					= null;
+var sceneLights 					= [];
 var debugRenderTargetBuffersScene 	= null;
 var bUseGBuffer 					= false;
 var fpsCounterDOMElement 			= null;
@@ -34,6 +37,20 @@ function InitializeEngine()
 	def_GBuffer = new GBuffer();
 	def_GBuffer.initializeGBuffer();
 
+	def_LBuffer = new LBuffer();
+	def_LBuffer.initializeLBuffer();
+
+	var pl = new PointLight( 30.0 );
+	pl.initializePointLight();
+	sceneLights.push( pl );
+
+	
+	var pl1 = new PointLight( 30.0 );
+	pl1.initializePointLight();
+	pl1.m_position[0] = 30.0;
+	pl1.m_position[1] = 10.0;
+	sceneLights.push( pl1 );
+	
 	gameWorld = new GameWorld();
 	debugRenderTargetBuffersScene = new PostRenderScene();
 
@@ -80,6 +97,8 @@ function CreateDeferredRendereringActors()
     var renderTargetOneActor 	= null; 
     var renderTargetTwoActor 	= null;
     var renderTargetThreeActor  = null;
+    var renderTargetFourActor  	= null;
+    var renderTargetFiveActor 	= null;
 	var depthBufferActor 		= null;
 
     renderTargetOneActor = new Actor();
@@ -91,27 +110,41 @@ function CreateDeferredRendereringActors()
     renderTargetTwoActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.40;
 
     renderTargetThreeActor = new Actor();
-    renderTargetThreeActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.18;
+    renderTargetThreeActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.155;
     renderTargetThreeActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.40;
 
     depthBufferActor = new Actor();
-    depthBufferActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.18;
+    depthBufferActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.155;
     depthBufferActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
+
+    renderTargetFourActor = new Actor();
+    renderTargetFourActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.4625;
+    renderTargetFourActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.84;
+
+    renderTargetFiveActor = new Actor();
+    renderTargetFiveActor.m_position[0] = sharedRenderer.canvasDOMElement.width * 0.4625;
+    renderTargetFiveActor.m_position[1] = sharedRenderer.canvasDOMElement.height * 0.40;
 
     CreateMeshComponent2DQuad( renderTargetOneActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
     CreateMeshComponent2DQuad( renderTargetTwoActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
     CreateMeshComponent2DQuad( renderTargetThreeActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
     CreateMeshComponent2DQuad( depthBufferActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
+    CreateMeshComponent2DQuad( renderTargetFourActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
+    CreateMeshComponent2DQuad( renderTargetFiveActor, quadVertices, quadTexCoords, quadFaces, 'FBOVertexShader.glsl', 'FBOFragmentShader.glsl' );
 
     renderTargetOneActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_diffuseComponentTexture;
     renderTargetTwoActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_renderTargetTwoTexture;
     renderTargetThreeActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_renderTargetThreeTexture;
     depthBufferActor.meshComponent.material.m_diffuseTexture = def_GBuffer.m_depthComponentTexture;
+    renderTargetFourActor.meshComponent.material.m_diffuseTexture = def_LBuffer.m_diffuseAccumulationTarget;
+    renderTargetFiveActor.meshComponent.material.m_diffuseTexture = def_LBuffer.m_specularAccumulationTarget;
 
     debugRenderTargetBuffersScene.addActor( renderTargetOneActor );
     debugRenderTargetBuffersScene.addActor( renderTargetTwoActor );
     debugRenderTargetBuffersScene.addActor( renderTargetThreeActor );
     debugRenderTargetBuffersScene.addActor( depthBufferActor );
+    debugRenderTargetBuffersScene.addActor( renderTargetFourActor );
+    debugRenderTargetBuffersScene.addActor( renderTargetFiveActor );
 
 	//var dragonAsJSON = loadDragonJson();
 	//dragonActor = new Actor();
@@ -222,6 +255,7 @@ function RunFrame( timeSeconds )
 	if ( bUseGBuffer )
 	{
 		sharedRenderer.renderSceneToGBuffer( gameWorld, def_GBuffer, deltaSeconds );
+		sharedRenderer.renderSceneLightsToLBuffer( sceneLights, def_GBuffer, def_LBuffer, deltaSeconds );
 
 		sharedRenderer.renderScene( gameWorld, deltaSeconds );
 

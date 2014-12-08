@@ -219,13 +219,11 @@ var CBRenderer = ( function()
 			this.renderer.enable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( true );
 			this.renderer.clearDepth( 1.0 );
-			this.renderer.clearColor( 0.1, 0.1, 0.1, 0.0 );
+			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
 
 			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
 
 			sceneToRender.render( deltaSeconds );
-
-			this.renderer.flush();
 
 			GBufferTarget.m_dirty = false;
 			GBufferTarget.unbindGBufferFrameBuffer();
@@ -237,9 +235,41 @@ var CBRenderer = ( function()
 		}
 
 
+		CBRenderer.prototype.renderSceneLightsToLBuffer = function( lightsToRender, GBufferTarget, LBufferTarget, deltaSeconds )
+		{
+			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+
+			this.applyProjectionMatrix();
+			CBMatrixStack.applyViewMatrixAndCache( CBMatrixStack.m_currentViewMatrix );
+
+			LBufferTarget.bindLBufferFrameBuffer();
+
+			this.renderer.disable( this.renderer.DEPTH_TEST );
+			this.renderer.depthMask( false );
+			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
+
+			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT );
+
+			for ( var i = 0; i < lightsToRender.length; ++i )
+			{
+				var light = lightsToRender[i];
+				light.applyLightAndRenderToLBuffer( GBufferTarget, deltaSeconds );
+			}
+
+			this.renderer.enable( this.renderer.DEPTH_TEST );
+			this.renderer.depthMask( true );
+
+			LBufferTarget.unbindLBufferFrameBuffer();
+
+			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
+			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
+		}
+
+
 		CBRenderer.prototype.renderPostRenderScene = function( sceneToRender, GBufferTarget, deltaSeconds )
 		{
 			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+			CBMatrixStack.clearMatrixMVPCache();
 
 			this.applyOrthoMatrix();
 

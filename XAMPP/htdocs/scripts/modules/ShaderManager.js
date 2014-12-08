@@ -40,7 +40,7 @@ function AddShaderProgramToCache( shaderProgramKey, shaderProgram )
 
 
 // PR: NON ASYNC 
-function LoadShaderProgramFromCacheOrCreateProgram( vertexShaderName, fragmentShaderName, material )
+function LoadShaderProgramFromCacheOrCreateProgram( vertexShaderName, fragmentShaderName, requestingObject )
 {
 	var sharedRenderer = CBRenderer.getSharedRenderer();
 	var shaderKey = GetShaderKeyFromShaderFileNames( vertexShaderName, fragmentShaderName ); // TODO:: Hash this instead
@@ -85,9 +85,9 @@ function LoadShaderProgramFromCacheOrCreateProgram( vertexShaderName, fragmentSh
 	    AddShaderProgramToCache( shaderKey, shaderProgram );
 	}
 	
-    if ( material !== null && shaderProgram !== null )
+    if ( requestingObject !== null && shaderProgram !== null )
     {
-    	material.OnShaderProgramLoaded( shaderProgram );
+    	requestingObject.OnShaderProgramLoaded( shaderProgram );
     }
 }
 

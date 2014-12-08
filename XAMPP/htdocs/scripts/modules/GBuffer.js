@@ -238,7 +238,7 @@ GBuffer.prototype =
 		 	0 );
 
 	
-		console.log( "FrameBuffer status after initialization: " );
+		console.log( "GBuffer FrameBuffer status after initialization: " );
 		console.log( sharedRenderer.renderer.checkFramebufferStatus( sharedRenderer.renderer.FRAMEBUFFER) == sharedRenderer.renderer.FRAMEBUFFER_COMPLETE );
 
 		sharedRenderer.drawBuffers.drawBuffersWEBGL([

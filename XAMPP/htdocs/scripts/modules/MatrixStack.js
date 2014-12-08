@@ -109,12 +109,17 @@ MatrixStack.prototype =
 	clearMatrixStackAndPushIdentityMatrix : function()
 	{
 		var identityMatrix = mat4.create();
-
 		this.clearMatrixStack();
 		this.m_matrixStack.push( identityMatrix );
+	},
 
-		this.m_currentModelMatrix 		= identityMatrix;
-		this.m_currentProjectionMatrix 	= identityMatrix;
+
+	clearMatrixMVPCache : function()
+	{
+		var identityMatrix = mat4.create();
+
+		this.m_currentProjectionMatrix  = identityMatrix;
 		this.m_currentViewMatrix 		= identityMatrix;
+		this.m_currentModelMatrix 		= identityMatrix;
 	},
 }

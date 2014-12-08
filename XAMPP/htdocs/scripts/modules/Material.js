@@ -6,20 +6,29 @@ define( [ "MathUtil", "Collections", "ShaderManager", "CBRenderer", "MatrixStack
 
 
 // ===== Global Constants ===== //
-var UNIFORM_NOT_LOCATED 			= -1;
-var ATTRIBUTE_NOT_LOCATED 			= UNIFORM_NOT_LOCATED;
+var UNIFORM_NOT_LOCATED 					= -1;
+var ATTRIBUTE_NOT_LOCATED 					= UNIFORM_NOT_LOCATED;
 
 // ===== Attributes  ===== //
-var POSITION_ATTRIBUTE_NAME 		= "a_position";
-var COLOR_ATTRIBUTE_NAME 			= "a_color";
-var TEXTURE_COORDS_ATTRIBUTE_NAME 	= "a_textureCoords";
-var NORMAL_ATTRIBUTE_NAME 			= "a_normal";
+var POSITION_ATTRIBUTE_NAME 				= "a_position";
+var COLOR_ATTRIBUTE_NAME 					= "a_color";
+var TEXTURE_COORDS_ATTRIBUTE_NAME 			= "a_textureCoords";
+var NORMAL_ATTRIBUTE_NAME 					= "a_normal";
 
 // ===== Uniforms ===== //
-var MODEL_MATRIX_UNIFORM_NAME 		= "u_modelMatrix";
-var VIEW_MATRIX_UNIFORM_NAME 		= "u_viewMatrix";
-var PROJECTION_MATRIX_UNIFORM_NAME 	= "u_projectionMatrix";
-var DIFFUSE_TEXTURE_UNIFORM_NAME 	= "s_diffuseTexture";
+var MODEL_MATRIX_UNIFORM_NAME 				= "u_modelMatrix";
+var VIEW_MATRIX_UNIFORM_NAME 				= "u_viewMatrix";
+var PROJECTION_MATRIX_UNIFORM_NAME 			= "u_projectionMatrix";
+var INVERSE_SCREEN_WIDTH_UNIFORM_NAME 		= "u_inverseScreenWidth";
+var INVERSE_SCREEN_HEIGHT_UNIFORM_NAME 		= "u_inverseScreenHeight";
+
+// ===== Textures ==== //
+var DIFFUSE_TEXTURE_UNIFORM_NAME 			= "s_diffuseTexture";
+var RENDER_TARGET_ONE_UNIFORM_NAME 			= "s_renderTargetOne";
+var RENDER_TARGET_TWO_UNIFORM_NAME 			= "s_renderTargetTwo";
+var RENDER_TARGET_THREE_UNIFORM_NAME 		= "s_renderTargetThree";
+var RENDER_TARGET_FOUR_UNIFORM_NAME 		= "s_renderTargetFour";
+var RENDER_TARGET_FIVE_UNIFORM_NAME 		= "s_renderTargetFive";
 
 
 // ===== Classes ===== //

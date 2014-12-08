@@ -170,8 +170,6 @@ Camera.prototype =
 		mat4.multiply( rotMultRot, rotateX, rotateY );
 		mat4.multiply( viewMatrix, rotMultRot, translate );
 
-		//console.log( this.m_orientationDegrees[0] );
-
 		return viewMatrix;
 	},
 }
