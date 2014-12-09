@@ -55,18 +55,18 @@ var MouseStopped = function()
 
 var onMouseMove = function(e) 
 {
-	var movementX = e.movementX ||
-      e.mozMovementX          ||
+	var movementX = //e.movementX ||
+     // e.mozMovementX          ||
       e.webkitMovementX       ||
       0;
 
-  	var movementY = e.movementY ||
-      e.mozMovementY      ||
+  	var movementY = //e.movementY ||
+     // e.mozMovementY      ||
       e.webkitMovementY   ||
       0;
 
-	Input.Mouse.lastX = e.clientX;
-	Input.Mouse.lastY = e.clientY;
+	//Input.Mouse.lastX = e.clientX;
+	//Input.Mouse.lastY = e.clientY;
 
 	Input.Mouse.moveX = movementX * mouseDampenFactor;
 	Input.Mouse.moveY = movementY * mouseDampenFactor;

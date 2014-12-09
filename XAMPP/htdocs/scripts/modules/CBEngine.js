@@ -19,6 +19,17 @@ var finalRenderScene 				= null;
 var bUseGBuffer 					= false;
 var fpsCounterDOMElement 			= null;
 
+var Z_WORLD_BOUND 					= 400.0;
+var Y_WORLD_BOUND 					= 160.0;
+var X_WORLD_BOUND 					= 400.0;
+var WORLD_MIN_BOUND 				= -10.0;
+
+var LIGHT_MOVE_STATE 				= 1;
+var NUM_STARTING_LIGHTS 			= 100;
+var MAX_LIGHT_RADIUS 				= 50.0;
+var MIN_LIGHT_RADIUS 				= 20.0;
+var INNER_RADIUS_COEFFICIENT 		= 0.67;
+
 
 function InitializeEngine()
 {
@@ -41,17 +52,41 @@ function InitializeEngine()
 	def_LBuffer = new LBuffer();
 	def_LBuffer.initializeLBuffer();
 
-	var pl = new PointLight( 30.0, 20.0 );
-	pl.initializePointLight();
-	pl.m_position[0] = 30.0;
-	pl.m_position[1] = 10.0;
-	pl.m_position[2] = 30.0;
-	pl.m_colorAndBrightness[0] = 0.0;
-	pl.m_colorAndBrightness[1] = 1.0;
-	pl.m_colorAndBrightness[2] = 0.0;
-	pl.m_colorAndBrightness[3] = 1.0; 
-	sceneLights.push( pl );
+	InitializePointLights();
+	
+	// Scenes
+	gameWorld 						= new GameWorld();
+	debugRenderTargetBuffersScene 	= new PostRenderScene();
+	finalRenderScene 				= new FinalPostRenderScene();
+	finalRenderScene.initializeFinalPostRenderScene();
 
+	CreateDeferredRendereringActors();
+}
+
+
+function InitializePointLights()
+{
+	for ( var i = 0; i < NUM_STARTING_LIGHTS; ++i )
+	{
+		var lightOuterRadius = MAX_LIGHT_RADIUS * Math.random();
+		if ( lightOuterRadius < MIN_LIGHT_RADIUS )
+		{
+			lightOuterRadius = MIN_LIGHT_RADIUS;
+		}
+		var lightInnerRadius = lightOuterRadius * INNER_RADIUS_COEFFICIENT;
+
+		var pl = new PointLight( lightOuterRadius, lightInnerRadius );
+		pl.initializePointLight();
+		pl.m_position[0] = Math.random() * X_WORLD_BOUND;
+		pl.m_position[1] = Math.random() * Y_WORLD_BOUND;
+		pl.m_position[2] = Math.random() * Z_WORLD_BOUND;
+		pl.m_colorAndBrightness[0] = Math.random() * 1.0;
+		pl.m_colorAndBrightness[1] = Math.random() * 1.0;
+		pl.m_colorAndBrightness[2] = Math.random() * 1.0;
+		pl.m_colorAndBrightness[3] = 1.0; 
+		sceneLights.push( pl );
+	}
+	
 	var pl1 = new PointLight( 40.0, 30.0 );
 	pl1.initializePointLight();
 	pl1.m_position[0] = 30.0;
@@ -62,14 +97,6 @@ function InitializeEngine()
 	pl1.m_colorAndBrightness[2] = 1.0;
 	pl1.m_colorAndBrightness[3] = 1.0; 
 	sceneLights.push( pl1 );
-	
-	// Scenes
-	gameWorld 						= new GameWorld();
-	debugRenderTargetBuffersScene 	= new PostRenderScene();
-	finalRenderScene 				= new FinalPostRenderScene();
-	finalRenderScene.initializeFinalPostRenderScene();
-
-	CreateDeferredRendereringActors();
 }
 
 
@@ -175,7 +202,7 @@ function CreateDeferredRendereringActors()
 	var numHeightRows 			= 3;
 	var rowOffsetAmount 		= 50.00;
 	var columnOffsetAmount 		= 50.00;
-	var heightOffsetAmount 		= 50.0;
+	var heightOffsetAmount 		= 50.00;
 
 	for ( var i = 0; i < numColumns; ++i )
 	{
@@ -256,7 +283,9 @@ function RunFrame( timeSeconds )
 	UpdateInput( deltaSeconds );
 
 	// ==== Update ==== //
+	UpdateSceneLights( deltaSeconds );
 	gameWorld.update( deltaSeconds );
+
 	
 	// ==== Render ==== //
 
@@ -294,6 +323,17 @@ function RunFrame( timeSeconds )
 
 	window.requestAnimationFrame( RunFrame );
 }
+
+
+function UpdateSceneLights( deltaSeconds )
+{
+	for ( var i = 0; i < sceneLights.length; ++i )
+	{
+		light = sceneLights[i];
+		light.update( deltaSeconds );
+	}
+}
+
 
 var fpsTime 				= 0.0;
 var fpsFrames 				= 0;

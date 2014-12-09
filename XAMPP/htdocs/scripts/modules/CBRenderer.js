@@ -237,7 +237,7 @@ var CBRenderer = ( function()
 			GBufferTarget.m_dirty = false;
 			GBufferTarget.unbindGBufferFrameBuffer();
 
-			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
+			//this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
     		
 			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
 		}
@@ -275,7 +275,7 @@ var CBRenderer = ( function()
 
 			LBufferTarget.unbindLBufferFrameBuffer();
 
-			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
+			//this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
 		}
 
 
@@ -290,10 +290,11 @@ var CBRenderer = ( function()
 			this.renderer.depthMask( false );
 
 			this.renderer.blendFunc( this.renderer.ONE, this.ZERO );
-			//this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
-			this.renderer.cullFace( null );
+			this.renderer.disable( this.renderer.CULL_FACE );
 
 			sceneToRender.render( deltaSeconds, GBufferTarget );
+
+			this.renderer.enable( this.renderer.CULL_FACE );
 
 			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
 		}
@@ -308,11 +309,13 @@ var CBRenderer = ( function()
 
 			this.renderer.disable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( false );
+			this.renderer.disable( this.renderer.CULL_FACE );
 
-			//this.renderer.blendFunc( this.renderer.ONE, this.ZERO );
 			this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
 
 			sceneToRender.render( GBufferTarget, LBufferTarget, deltaSeconds );
+
+			this.renderer.enable( this.renderer.CULL_FACE );
 		}
 	}
 

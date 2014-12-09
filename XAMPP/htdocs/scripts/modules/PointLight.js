@@ -1,4 +1,4 @@
-define( [ "LBuffer", "GLMatrix", "MathUtil", "MatrixStack", "Collections", "CBRenderer", "Texture", "ShaderManager", "Material" ], function()
+define( [ "LBuffer", "GLMatrix", "MathUtil", "MatrixStack", "Collections", "CBRenderer", "Texture", "ShaderManager", "Material", "CBEngine" ], function()
 {
 	console.log( "PointLight.js has finished loading" );
 });
@@ -13,13 +13,25 @@ var LIGHT_COLOR_AND_BRIGHTNESS_UNIFORM 		= "u_lightColorAndBrightness";
 var LIGHT_OUTER_RADIUS_UNIFORM 				= "u_lightOuterRadius";
 var LIGHT_INNER_RADIUS_UNIFORM 			 	= "u_lightInnerRadius";
 
+var LIGHT_MOVE_SPEED 						= 30.0;
+var LIGHT_MIN_ORBIT_RADIUS 					= 40.0;
+var LIGHT_MAX_ORBIT_RADIUS 					= 300.0;
+
 
 var PointLight = function( outerRadius, innerRadius )
 {
+	// Light properties
 	this.m_position 				= vec3.create();
 	this.m_innerRadius 				= innerRadius;
 	this.m_outerRadius 				= outerRadius;
 	this.m_colorAndBrightness 		= vec4.create();
+
+	this.m_velocity 				= vec3.create();
+	this.m_theta 					= 0.0;
+	this.m_rotationSpeed 			= 0.50;
+	this.m_orbitRadius 				= 70.0;
+	this.m_orbitIndexOne 			= 0;
+	this.m_orbitIndexTwo 			= 1;
 
 	// Shader Related Variables
 	this.m_shaderProgram 			= null;
@@ -39,6 +51,22 @@ var PointLight = function( outerRadius, innerRadius )
 PointLight.prototype = 
 {
 	constructor : PointLight,
+
+	update : function( deltaSeconds )
+	{
+		if ( LIGHT_MOVE_STATE == 0 )
+		{
+
+		}
+		else if ( LIGHT_MOVE_STATE == 1 )
+		{
+			this.m_theta += this.m_rotationSpeed * deltaSeconds;
+			this.m_position[ this.m_orbitIndexOne ] = Math.cos( this.m_theta ) * this.m_orbitRadius;
+			this.m_position[ this.m_orbitIndexTwo ] = Math.sin( this.m_theta ) * this.m_orbitRadius;
+			
+			this.clampLightPositionsToWorldBounds();
+		}
+	},
 
 
 	applyLightAndRenderToLBuffer : function( GBufferTarget, deltaSeconds )
@@ -201,6 +229,7 @@ PointLight.prototype =
 	{
 		this.initializePointLightSphere();
 		LoadShaderProgramFromCacheOrCreateProgram( POINT_LIGHT_VERTEX_SHADER_NAME, POINT_LIGHT_FRAGMENT_SHADER_NAME, this );
+		this.determineOrbit();
 	},
 
 
@@ -388,6 +417,83 @@ PointLight.prototype =
 		sharedRenderer.renderer.disableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
 		sharedRenderer.renderer.disableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
 	},
+
+	// For Demonstration purposes 
+	clampLightPositionsToWorldBounds : function()
+	{
+		if ( this.m_position[0] < WORLD_MIN_BOUND )
+		{
+			this.m_position[0] = WORLD_MIN_BOUND;
+		}
+
+		if ( this.m_position[1] < WORLD_MIN_BOUND )
+		{
+			this.m_position[1] = WORLD_MIN_BOUND;
+		}
+
+		if ( this.m_position[2] < WORLD_MIN_BOUND )
+		{
+			this.m_position[2] = WORLD_MIN_BOUND;
+		}
+
+		if ( this.m_position[0] > X_WORLD_BOUND )
+		{
+			this.m_position[0] = X_WORLD_BOUND;
+		}
+
+		if ( this.m_position[1] > Y_WORLD_BOUND )
+		{
+			this.m_position[1] = Y_WORLD_BOUND;
+		}
+
+		if ( this.m_position[2] > Z_WORLD_BOUND )
+		{
+			this.m_position[2] = Z_WORLD_BOUND;
+		}
+	},
+
+	// For Demonstration purposes 
+	determineOrbit : function()
+	{
+		var randomForIndex = Math.random();
+		if ( randomForIndex < 0.15 )
+		{
+			this.m_orbitIndexOne = 0;
+			this.m_orbitIndexTwo = 1;
+		}
+		else if ( randomForIndex >= 0.15 && randomForIndex < 0.30 )
+		{
+			this.m_orbitIndexOne = 1;
+			this.m_orbitIndexTwo = 2;
+		}
+		else if ( randomForIndex >= 0.30 && randomForIndex < 0.45 )
+		{
+			this.m_orbitIndexOne = 0;
+			this.m_orbitIndexTwo = 2;
+		}
+		else if ( randomForIndex >= 0.45 && randomForIndex < 0.60 )
+		{
+			this.m_orbitIndexOne = 2;
+			this.m_orbitIndexTwo = 0;
+		}
+		else if ( randomForIndex >= 0.60 && randomForIndex < 0.75 )
+		{
+			this.m_orbitIndexOne = 2;
+			this.m_orbitIndexTwo = 1;
+		}
+		else if ( randomForIndex >= 0.75 && randomForIndex <= 1.00 )
+		{
+			this.m_orbitIndexOne = 1;
+			this.m_orbitIndexTwo = 0;
+		}
+
+		this.m_orbitRadius = Math.random() * LIGHT_MAX_ORBIT_RADIUS;
+		if ( this.m_orbitRadius < LIGHT_MIN_ORBIT_RADIUS )
+		{
+			this.m_orbitRadius = LIGHT_MIN_ORBIT_RADIUS;
+		}
+	},
+
 
 
 	// ===== Event and Lifecycle Functions ===== //

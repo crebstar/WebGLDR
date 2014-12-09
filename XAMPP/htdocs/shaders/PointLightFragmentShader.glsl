@@ -13,7 +13,6 @@ uniform float u_inverseScreenHeight;
 uniform sampler2D s_renderTargetTwo; // Normals
 uniform sampler2D s_renderTargetThree; // Positions
 
-varying vec3 vNormal;
 varying vec4 vWorldPosition;
 
 

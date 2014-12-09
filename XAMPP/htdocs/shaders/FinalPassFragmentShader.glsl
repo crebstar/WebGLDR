@@ -16,12 +16,12 @@ void main(void)
 	vec2 texCoords = gl_FragCoord.xy * inverseScreenCoords;
 
 	vec4 renderTargetOne  			= texture2D( s_renderTargetOne, texCoords );
-	vec4 renderTargetTwo 			= texture2D( s_renderTargetTwo, texCoords );
+	//vec4 renderTargetTwo 			= texture2D( s_renderTargetTwo, texCoords );
 	vec4 renderTargetFour 			= texture2D( s_renderTargetFour, texCoords );
 	vec4 renderTargetFive 			= texture2D( s_renderTargetFive, texCoords );
 
 	vec3 diffuseColor 				= renderTargetOne.xyz;
-	vec3 normalsWorldSpace 			= renderTargetTwo.xyz;
+	//vec3 normalsWorldSpace 			= renderTargetTwo.xyz;
 	vec3 accumulatedDiffuseLight 	= renderTargetFour.xyz;
 	vec3 accumulatedSpecularLight 	= renderTargetFive.xyz;
 

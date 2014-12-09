@@ -11,7 +11,7 @@ uniform sampler2D s_diffuseTexture;
 void main(void) 
 {
 	vec4 renderTargetOne 	= texture2D( s_diffuseTexture, vTexCoords );
-	vec4 renderTargetTwo 	= vec4( normalize( vNormal ), 1.00 );
+	vec4 renderTargetTwo 	= vec4( vNormal , 1.00 );
 	vec4 renderTargetThree 	= vec4( vWorldPosition.x, vWorldPosition.y, vWorldPosition.z, 1.00 );
 
 	gl_FragData[0] = renderTargetOne;
