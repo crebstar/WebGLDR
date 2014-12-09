@@ -138,6 +138,7 @@ var CBRenderer = ( function()
 			this.renderer.clearDepth( 1.0 );
 			this.renderer.enable( this.renderer.BLEND );
 			this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
+			this.renderer.enable( this.renderer.CULL_FACE );
 			
 			// PR: TODO:: Refactor this out of the renderer
 			// perspective = function (out, fovy, aspect, near, far)
@@ -204,6 +205,8 @@ var CBRenderer = ( function()
 			this.renderer.enable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( true );
 			this.renderer.clearDepth( 1.0 );
+
+			this.renderer.cullFace( this.renderer.BACK );
 			
 			sceneToRender.render( deltaSeconds );
 
@@ -226,6 +229,8 @@ var CBRenderer = ( function()
 			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
 
 			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
+
+			this.renderer.cullFace( this.renderer.BACK );
 
 			sceneToRender.render( deltaSeconds );
 
@@ -255,11 +260,15 @@ var CBRenderer = ( function()
 
 			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT );
 
+			this.renderer.cullFace( this.renderer.FRONT );
+
 			for ( var i = 0; i < lightsToRender.length; ++i )
 			{
 				var light = lightsToRender[i];
 				light.applyLightAndRenderToLBuffer( GBufferTarget, deltaSeconds );
 			}
+
+			this.renderer.cullFace( this.renderer.BACK );
 
 			this.renderer.enable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( true );
@@ -282,6 +291,7 @@ var CBRenderer = ( function()
 
 			this.renderer.blendFunc( this.renderer.ONE, this.ZERO );
 			//this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
+			this.renderer.cullFace( null );
 
 			sceneToRender.render( deltaSeconds, GBufferTarget );
 
@@ -299,6 +309,7 @@ var CBRenderer = ( function()
 			this.renderer.disable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( false );
 
+			//this.renderer.blendFunc( this.renderer.ONE, this.ZERO );
 			this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
 
 			sceneToRender.render( GBufferTarget, LBufferTarget, deltaSeconds );

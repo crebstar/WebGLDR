@@ -4,8 +4,6 @@ precision mediump float;
 uniform float u_inverseScreenWidth;
 uniform float u_inverseScreenHeight;
 
-varying vec4 vWorldPosition;
-
 uniform sampler2D s_renderTargetOne; 	// Diffuse
 uniform sampler2D s_renderTargetTwo; 	// Normals
 uniform sampler2D s_renderTargetFour; 	// Accumulated Diffuse Lighting
@@ -27,11 +25,12 @@ void main(void)
 	vec3 accumulatedDiffuseLight 	= renderTargetFour.xyz;
 	vec3 accumulatedSpecularLight 	= renderTargetFive.xyz;
 
-	vec3 finalColor = ( diffuseColor * accumulatedDiffuseLight );
+	vec3 ambientGlobalLight 		= vec3( 0.065, 0.065, 0.065 );
 
-	//gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 );
+	vec3 finalColor = ( diffuseColor * accumulatedDiffuseLight + ( diffuseColor * ambientGlobalLight ) );
+
+	
 	gl_FragColor = vec4( finalColor, 1.0 );
-	//gl_FragColor = vec4( normalsWorldSpace, 1.0 );
-	//gl_FragColor = vec4( accumulatedDiffuseLight, 1.0 );
+
 	//gl_FragColor = vec4( accumulatedSpecularLight, 1.0 );
 }

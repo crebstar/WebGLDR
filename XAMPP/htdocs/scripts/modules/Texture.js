@@ -45,7 +45,10 @@ Texture.prototype =
 
 			sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_MAG_FILTER, sharedRenderer.renderer.LINEAR );
 
-			sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_MIN_FILTER, sharedRenderer.renderer.LINEAR );
+	
+			//sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_MIN_FILTER, sharedRenderer.renderer.LINEAR );
+			sharedRenderer.renderer.texParameteri( sharedRenderer.renderer.TEXTURE_2D, sharedRenderer.renderer.TEXTURE_MIN_FILTER, sharedRenderer.renderer.LINEAR_MIPMAP_NEAREST );
+			sharedRenderer.renderer.generateMipmap( sharedRenderer.renderer.TEXTURE_2D );
 
 			sharedRenderer.renderer.bindTexture( sharedRenderer.renderer.TEXTURE_2D, null );
 
