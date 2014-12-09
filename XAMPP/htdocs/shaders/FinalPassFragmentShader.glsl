@@ -14,8 +14,7 @@ uniform sampler2D s_renderTargetFive; 	// Accumulated Specular Lighting
 
 void main(void) 
 {
-	vec2 inverseScreenCoords = vec2( 1.0/2048.0, 1.0/1024.0 );
-	//vec2 inverseScreenCoords = vec2( u_inverseScreenWidth, u_inverseScreenHeight );
+	vec2 inverseScreenCoords = vec2( u_inverseScreenWidth, u_inverseScreenHeight );
 	vec2 texCoords = gl_FragCoord.xy * inverseScreenCoords;
 
 	vec4 renderTargetOne  			= texture2D( s_renderTargetOne, texCoords );
@@ -28,8 +27,10 @@ void main(void)
 	vec3 accumulatedDiffuseLight 	= renderTargetFour.xyz;
 	vec3 accumulatedSpecularLight 	= renderTargetFive.xyz;
 
+	vec3 finalColor = ( diffuseColor * accumulatedDiffuseLight );
+
 	//gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 );
-	gl_FragColor = vec4( diffuseColor, 1.0 );
+	gl_FragColor = vec4( finalColor, 1.0 );
 	//gl_FragColor = vec4( normalsWorldSpace, 1.0 );
 	//gl_FragColor = vec4( accumulatedDiffuseLight, 1.0 );
 	//gl_FragColor = vec4( accumulatedSpecularLight, 1.0 );
