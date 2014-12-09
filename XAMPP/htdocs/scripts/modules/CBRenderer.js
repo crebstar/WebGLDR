@@ -136,6 +136,8 @@ var CBRenderer = ( function()
 			this.renderer.depthFunc( this.renderer.LEQUAL );
 			this.renderer.depthMask( true );
 			this.renderer.clearDepth( 1.0 );
+			this.renderer.enable( this.renderer.BLEND );
+			this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
 			
 			// PR: TODO:: Refactor this out of the renderer
 			// perspective = function (out, fovy, aspect, near, far)
@@ -195,8 +197,9 @@ var CBRenderer = ( function()
 		CBRenderer.prototype.renderScene = function( sceneToRender, deltaSeconds )
 		{
 			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
-
 			this.applyProjectionMatrix();
+
+			this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
 
 			this.renderer.enable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( true );
@@ -211,8 +214,9 @@ var CBRenderer = ( function()
 		CBRenderer.prototype.renderSceneToGBuffer = function( sceneToRender, GBufferTarget, deltaSeconds )
 		{
 			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
-
 			this.applyProjectionMatrix();
+
+			this.renderer.blendFunc( this.renderer.ONE, this.renderer.ZERO );
 
 			GBufferTarget.bindGBufferFrameBuffer();
 
@@ -228,7 +232,6 @@ var CBRenderer = ( function()
 			GBufferTarget.m_dirty = false;
 			GBufferTarget.unbindGBufferFrameBuffer();
 
-			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
 			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
     		
 			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
@@ -243,6 +246,8 @@ var CBRenderer = ( function()
 			CBMatrixStack.applyViewMatrixAndCache( CBMatrixStack.m_currentViewMatrix );
 
 			LBufferTarget.bindLBufferFrameBuffer();
+
+			this.renderer.blendFunc( this.renderer.ONE, this.renderer.ONE );
 
 			this.renderer.disable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( false );
@@ -261,7 +266,6 @@ var CBRenderer = ( function()
 
 			LBufferTarget.unbindLBufferFrameBuffer();
 
-			this.renderer.clearColor( 0.0, 0.0, 0.0, 0.0 );
 			this.renderer.clear( this.renderer.COLOR_BUFFER_BIT | this.renderer.DEPTH_BUFFER_BIT );
 		}
 
@@ -276,9 +280,28 @@ var CBRenderer = ( function()
 			this.renderer.disable( this.renderer.DEPTH_TEST );
 			this.renderer.depthMask( false );
 
+			this.renderer.blendFunc( this.renderer.ONE, this.ZERO );
+			//this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
+
 			sceneToRender.render( deltaSeconds, GBufferTarget );
 
 			this.renderer.bindTexture( this.renderer.TEXTURE_2D, null );
+		}
+
+
+		CBRenderer.prototype.renderSceneFinalPass = function( sceneToRender, GBufferTarget, LBufferTarget, deltaSeconds )
+		{
+			CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
+			CBMatrixStack.clearMatrixMVPCache();
+
+			this.applyOrthoMatrix();
+
+			this.renderer.disable( this.renderer.DEPTH_TEST );
+			this.renderer.depthMask( false );
+
+			this.renderer.blendFunc( this.renderer.SRC_ALPHA, this.renderer.ONE_MINUS_SRC_ALPHA );
+
+			sceneToRender.render( GBufferTarget, LBufferTarget, deltaSeconds );
 		}
 	}
 

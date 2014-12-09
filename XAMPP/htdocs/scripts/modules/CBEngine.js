@@ -15,6 +15,7 @@ var def_GBuffer 					= null;
 var def_LBuffer 					= null;
 var sceneLights 					= [];
 var debugRenderTargetBuffersScene 	= null;
+var finalRenderScene 				= null;
 var bUseGBuffer 					= false;
 var fpsCounterDOMElement 			= null;
 
@@ -40,29 +41,33 @@ function InitializeEngine()
 	def_LBuffer = new LBuffer();
 	def_LBuffer.initializeLBuffer();
 
-	var pl = new PointLight( 30.0 );
+	var pl = new PointLight( 30.0, 20.0 );
 	pl.initializePointLight();
 	pl.m_position[0] = 30.0;
 	pl.m_position[1] = 10.0;
-	pl.m_position[2] = 0.0;
+	pl.m_position[2] = 30.0;
 	pl.m_colorAndBrightness[0] = 0.0;
 	pl.m_colorAndBrightness[1] = 1.0;
 	pl.m_colorAndBrightness[2] = 0.0;
 	pl.m_colorAndBrightness[3] = 1.0; 
 	sceneLights.push( pl );
 
-	var pl1 = new PointLight( 40.0 );
+	var pl1 = new PointLight( 40.0, 30.0 );
 	pl1.initializePointLight();
 	pl1.m_position[0] = 30.0;
 	pl1.m_position[1] = 10.0;
+	pl1.m_position[2] = 30.0;
 	pl1.m_colorAndBrightness[0] = 1.0;
 	pl1.m_colorAndBrightness[1] = 0.0;
 	pl1.m_colorAndBrightness[2] = 1.0;
 	pl1.m_colorAndBrightness[3] = 1.0; 
 	sceneLights.push( pl1 );
 	
-	gameWorld = new GameWorld();
-	debugRenderTargetBuffersScene = new PostRenderScene();
+	// Scenes
+	gameWorld 						= new GameWorld();
+	debugRenderTargetBuffersScene 	= new PostRenderScene();
+	finalRenderScene 				= new FinalPostRenderScene();
+	finalRenderScene.initializeFinalPostRenderScene();
 
 	CreateDeferredRendereringActors();
 }
@@ -273,7 +278,11 @@ function RunFrame( timeSeconds )
 	}
 	else
 	{
-		sharedRenderer.renderScene( gameWorld, deltaSeconds );
+		sharedRenderer.renderSceneToGBuffer( gameWorld, def_GBuffer, deltaSeconds );
+		sharedRenderer.renderSceneLightsToLBuffer( sceneLights, def_GBuffer, def_LBuffer, deltaSeconds );
+		sharedRenderer.renderSceneFinalPass( finalRenderScene, def_GBuffer, def_LBuffer, deltaSeconds );
+
+		//sharedRenderer.renderScene( gameWorld, deltaSeconds );
 	}
 	
 

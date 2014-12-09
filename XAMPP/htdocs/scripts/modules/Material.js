@@ -24,12 +24,12 @@ var INVERSE_SCREEN_HEIGHT_UNIFORM_NAME 		= "u_inverseScreenHeight";
 
 // ===== Textures ==== //
 var DIFFUSE_TEXTURE_UNIFORM_NAME 			= "s_diffuseTexture";
+
 var RENDER_TARGET_ONE_UNIFORM_NAME 			= "s_renderTargetOne";
 var RENDER_TARGET_TWO_UNIFORM_NAME 			= "s_renderTargetTwo";
 var RENDER_TARGET_THREE_UNIFORM_NAME 		= "s_renderTargetThree";
 var RENDER_TARGET_FOUR_UNIFORM_NAME 		= "s_renderTargetFour";
 var RENDER_TARGET_FIVE_UNIFORM_NAME 		= "s_renderTargetFive";
-
 
 // ===== Classes ===== //
 var Material = function()
@@ -115,7 +115,7 @@ Material.prototype =
 
 		if ( diffuseUniform !== null )
 		{
-			sharedRenderer.renderer.uniform1i( diffuseUniform.m_uniformLocation, diffuseTexture );
+			//sharedRenderer.renderer.uniform1i( diffuseUniform.m_uniformLocation, 0 );
 		}
 
 		this.m_diffuseTexture = diffuseTexture;

@@ -61,12 +61,12 @@ GBuffer.prototype =
 		sharedRenderer.renderer.texParameteri( 
 			sharedRenderer.renderer.TEXTURE_2D,
 		 	sharedRenderer.renderer.TEXTURE_MAG_FILTER,
-		  	sharedRenderer.renderer.LINEAR );
+		  	sharedRenderer.renderer.NEAREST );
 
 		sharedRenderer.renderer.texParameteri( 
 			sharedRenderer.renderer.TEXTURE_2D, 
 			sharedRenderer.renderer.TEXTURE_MIN_FILTER, 
-			sharedRenderer.renderer.LINEAR );
+			sharedRenderer.renderer.NEAREST );
 
 		sharedRenderer.renderer.texParameteri( 
 			sharedRenderer.renderer.TEXTURE_2D, 

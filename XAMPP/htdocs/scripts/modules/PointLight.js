@@ -14,10 +14,10 @@ var LIGHT_OUTER_RADIUS_UNIFORM 				= "u_lightOuterRadius";
 var LIGHT_INNER_RADIUS_UNIFORM 			 	= "u_lightInnerRadius";
 
 
-var PointLight = function( outerRadius )
+var PointLight = function( outerRadius, innerRadius )
 {
 	this.m_position 				= vec3.create();
-	this.m_innerRadius 				= outerRadius;
+	this.m_innerRadius 				= innerRadius;
 	this.m_outerRadius 				= outerRadius;
 	this.m_colorAndBrightness 		= vec4.create();
 
@@ -386,7 +386,6 @@ PointLight.prototype =
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
 		sharedRenderer.renderer.disableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
-
 		sharedRenderer.renderer.disableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
 	},
 

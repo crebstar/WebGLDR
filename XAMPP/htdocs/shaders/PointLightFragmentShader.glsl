@@ -41,9 +41,6 @@ void main( void )
 
 	float distanceFromLightToPoint = length( differenceVectorLightToPoint );
 
-	float dotProductLightToPWithNormal = dot( differenceVectorLightToPointNormalized, normalInWorldSpace );
-	dotProductLightToPWithNormal = clamp( dotProductLightToPWithNormal, 0.0, 1.0 );
-
 	// Fraction Brightness Due To Distance
 	float fractionBrightnessDueToDistance = ( u_lightOuterRadius - distanceFromLightToPoint ) / ( u_lightOuterRadius - u_lightInnerRadius );
 	fractionBrightnessDueToDistance = clamp( fractionBrightnessDueToDistance * u_lightColorAndBrightness.a , 0.0, 1.0 );
