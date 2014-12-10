@@ -37,7 +37,7 @@ var Material = function()
 {
 	this.m_shaderProgram 		= null;
 	this.m_materialAttributes 	= new MaterialAttributes();
-	this.m_shaderUniformParams 	= new Map();
+	this.m_shaderUniformParams 	= new FastMap();
 	this.m_diffuseTexture 		= null;
 }
 

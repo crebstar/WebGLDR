@@ -44,7 +44,7 @@ var PointLight = function( outerRadius, innerRadius )
 
 	this.m_NPoints 				 	= 0;
 
-	this.m_shaderUniformParams 		= new Map();
+	this.m_shaderUniformParams 		= new FastMap();
 }
 
 

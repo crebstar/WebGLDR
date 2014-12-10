@@ -92,7 +92,7 @@ var FinalPostRenderScene = function()
 
 	this.m_NPoints 				 	= 0;
 
-	this.m_shaderUniformParams 		= new Map();
+	this.m_shaderUniformParams 		= new FastMap();
 }
 
 
