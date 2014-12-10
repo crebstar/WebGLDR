@@ -18,14 +18,15 @@ var debugRenderTargetBuffersScene 	= null;
 var finalRenderScene 				= null;
 var bUseGBuffer 					= false;
 var fpsCounterDOMElement 			= null;
+var lightCounterDOMElement 			= null;
 
 var Z_WORLD_BOUND 					= 400.0;
-var Y_WORLD_BOUND 					= 160.0;
+var Y_WORLD_BOUND 					= 110.0;
 var X_WORLD_BOUND 					= 400.0;
 var WORLD_MIN_BOUND 				= -10.0;
 
-var LIGHT_MOVE_STATE 				= 1;
-var NUM_STARTING_LIGHTS 			= 100;
+var LIGHT_MOVE_STATE 				= 0;
+var NUM_STARTING_LIGHTS 			= 2;
 var MAX_LIGHT_RADIUS 				= 50.0;
 var MIN_LIGHT_RADIUS 				= 20.0;
 var INNER_RADIUS_COEFFICIENT 		= 0.67;
@@ -43,7 +44,7 @@ function InitializeEngine()
 	console.log( "Renderer is initialized and ready!" );
 
 	RequestPointerLock();
-	InitializeFPSCounter();
+	InitializeFPSCounterAndLightCounter();
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 
 	def_GBuffer = new GBuffer();
@@ -68,41 +69,17 @@ function InitializePointLights()
 {
 	for ( var i = 0; i < NUM_STARTING_LIGHTS; ++i )
 	{
-		var lightOuterRadius = MAX_LIGHT_RADIUS * Math.random();
-		if ( lightOuterRadius < MIN_LIGHT_RADIUS )
-		{
-			lightOuterRadius = MIN_LIGHT_RADIUS;
-		}
-		var lightInnerRadius = lightOuterRadius * INNER_RADIUS_COEFFICIENT;
-
-		var pl = new PointLight( lightOuterRadius, lightInnerRadius );
-		pl.initializePointLight();
-		pl.m_position[0] = Math.random() * X_WORLD_BOUND;
-		pl.m_position[1] = Math.random() * Y_WORLD_BOUND;
-		pl.m_position[2] = Math.random() * Z_WORLD_BOUND;
-		pl.m_colorAndBrightness[0] = Math.random() * 1.0;
-		pl.m_colorAndBrightness[1] = Math.random() * 1.0;
-		pl.m_colorAndBrightness[2] = Math.random() * 1.0;
-		pl.m_colorAndBrightness[3] = 1.0; 
-		sceneLights.push( pl );
+		AddLightToScene();
 	}
-	
-	var pl1 = new PointLight( 40.0, 30.0 );
-	pl1.initializePointLight();
-	pl1.m_position[0] = 30.0;
-	pl1.m_position[1] = 10.0;
-	pl1.m_position[2] = 30.0;
-	pl1.m_colorAndBrightness[0] = 1.0;
-	pl1.m_colorAndBrightness[1] = 0.0;
-	pl1.m_colorAndBrightness[2] = 1.0;
-	pl1.m_colorAndBrightness[3] = 1.0; 
-	sceneLights.push( pl1 );
+
+	UpdateLightCount( sceneLights.length );
 }
 
 
-function InitializeFPSCounter()
+function InitializeFPSCounterAndLightCounter()
 {
-	fpsCounterDOMElement = document.getElementById("fps_counter");
+	fpsCounterDOMElement 	= document.getElementById("fps_counter");
+	lightCounterDOMElement  = document.getElementById("light_counter");
 }
 
 
@@ -187,10 +164,6 @@ function CreateDeferredRendereringActors()
     debugRenderTargetBuffersScene.addActor( depthBufferActor );
     debugRenderTargetBuffersScene.addActor( renderTargetFourActor );
     debugRenderTargetBuffersScene.addActor( renderTargetFiveActor );
-
-	//var dragonAsJSON = loadDragonJson();
-	//dragonActor = new Actor();
-	//CreateMeshComponentWithVertDataForActor( dragonActor, dragonAsJSON.vertices, dragonAsJSON.indices, 'testVertexShader.glsl', 'testFragmentShader.glsl' );
 
 	var geomVertexShader = 'GeometryVertexShader.glsl';
 	var geomFragShader = 'GeometryFragmentShader.glsl';
@@ -289,7 +262,6 @@ function RunFrame( timeSeconds )
 	
 	// ==== Render ==== //
 
-	// TEST
 	var sharedRenderer = CBRenderer.getSharedRenderer();
 
 	// TODO:: Move this to CBRenderer
@@ -337,7 +309,7 @@ function UpdateSceneLights( deltaSeconds )
 
 var fpsTime 				= 0.0;
 var fpsFrames 				= 0;
-var frequencyOfFPSUpdate 	= 2;
+var frequencyOfFPSUpdate 	= 1;
 
 function UpdateFPSCounter( deltaSeconds )
 {
@@ -357,51 +329,60 @@ function UpdateFPSCounter( deltaSeconds )
 }
 
 
-// TEST
-function loadDragonJson()
+function UpdateLightCount( numLights )
 {
-	var dragonAsJSON = null;
+	lightCounterDOMElement.innerHTML = "Light Count: " + numLights;
+}
 
-	$.ajax(
+
+function AddLightToScene()
+{
+	var lightOuterRadius = MAX_LIGHT_RADIUS * Math.random();
+	if ( lightOuterRadius < MIN_LIGHT_RADIUS )
 	{
-	    async: false, 
-	    dataType : "text",
-	    url: "DataFiles/dragon.json",
-	    success: function( result ) 
-	    {
-	        console.log( "--- dragon.json has been loaded! --- " );
-	        dragonAsJSON = JSON.parse( result );
+		lightOuterRadius = MIN_LIGHT_RADIUS;
+	}
+	var lightInnerRadius = lightOuterRadius * INNER_RADIUS_COEFFICIENT;
 
-	    }
-   	});
-
-	console.log( dragonAsJSON );
-
-   	return dragonAsJSON;
+	var pl = new PointLight( lightOuterRadius, lightInnerRadius );
+	pl.initializePointLight();
+	pl.m_position[0] = Math.random() * X_WORLD_BOUND;
+	pl.m_position[1] = Math.random() * Y_WORLD_BOUND;
+	pl.m_position[2] = Math.random() * Z_WORLD_BOUND;
+	pl.m_colorAndBrightness[0] = Math.random() * 1.0;
+	pl.m_colorAndBrightness[1] = Math.random() * 1.0;
+	pl.m_colorAndBrightness[2] = Math.random() * 1.0;
+	pl.m_colorAndBrightness[3] = 1.0; 
+	sceneLights.push( pl );
 }
 
 
 var onKeyDownCB = function(e)
 {
-	if ( String.fromCharCode( e.keyCode ) == 'G' )
+	if ( e.keyCode  == 71 ) // G
 	{
 		bUseGBuffer = !bUseGBuffer;
-
-		if ( bUseGBuffer )
-		{
-			console.log( "CBEngine now rendering WITH GBuffer" );
-		}
-		else
-		{
-			console.log( "CBEngine now rendering WITHOUT GBuffer" );
-		}
 	}
-
-	if ( String.fromCharCode( e.keyCode ) == 'P' )
+	else if ( e.keyCode  == 80 ) // P
 	{
 		bUsePointerLock = !bUsePointerLock;
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 		sharedRenderer.canvasDOMElement.requestPointerLock();
+	}
+	else if ( e.keyCode == 76 ) // L
+	{
+		AddLightToScene();
+		UpdateLightCount( sceneLights.length );
+	}
+
+
+	if ( e.keyCode == 49 )
+	{
+		LIGHT_MOVE_STATE = 0;
+	}
+	else if ( e.keyCode == 50 )
+	{
+		LIGHT_MOVE_STATE = 1;
 	}
 }
 

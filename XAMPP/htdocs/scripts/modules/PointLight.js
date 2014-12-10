@@ -189,9 +189,10 @@ PointLight.prototype =
 
 	updateMVPAndScreenUniforms : function()
 	{
-		var modelUniform 		= this.m_shaderUniformParams.get( MODEL_MATRIX_UNIFORM_NAME, null );
-		var viewUniform 		= this.m_shaderUniformParams.get( VIEW_MATRIX_UNIFORM_NAME, null );
-		var projectionUniform 	= this.m_shaderUniformParams.get( PROJECTION_MATRIX_UNIFORM_NAME, null );
+		var modelUniform 				= this.m_shaderUniformParams.get( MODEL_MATRIX_UNIFORM_NAME, null );
+		var viewUniform 				= this.m_shaderUniformParams.get( VIEW_MATRIX_UNIFORM_NAME, null );
+		var projectionUniform 			= this.m_shaderUniformParams.get( PROJECTION_MATRIX_UNIFORM_NAME, null );
+		var cameraPositionUniform 		= this.m_shaderUniformParams.get( CAMERA_POSITION_UNIFORM_NAME, null );
 
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
@@ -208,6 +209,12 @@ PointLight.prototype =
 		if ( projectionUniform !== null )
 		{
 			sharedRenderer.renderer.uniformMatrix4fv( projectionUniform.m_uniformLocation, false, CBMatrixStack.m_currentProjectionMatrix );
+		}
+
+		if ( cameraPositionUniform !== null )
+		{
+			var cameraPos = CBMatrixStack.m_currentCameraPosition;
+			sharedRenderer.renderer.uniform3f( cameraPositionUniform.m_uniformLocation, cameraPos[0], cameraPos[1], cameraPos[2] );
 		}
 
 		var inverseScreenWidthUniform = this.m_shaderUniformParams.get( INVERSE_SCREEN_WIDTH_UNIFORM_NAME, null );
@@ -320,11 +327,12 @@ PointLight.prototype =
 
 	createCoreShaderUniformParams : function()
 	{
-		// ===== Model | View | Projection ===== //
+		// ===== Model | View | Projection | Other Math Structures ===== //
 		var identityMatrix 	  			= mat4.create(); 
 		var modelUniformParam 			= new ShaderUniform( this );
 		var viewUniformParam 			= new ShaderUniform( this );
 		var projectionUniformParam 		= new ShaderUniform( this );
+		var cameraPositionUniformParam 	= new ShaderUniform( this );
 		var inverseScreenWidthParam 	= new ShaderUniform( this );
 		var inverseScreenHeightParam 	= new ShaderUniform( this );
 
@@ -333,12 +341,14 @@ PointLight.prototype =
 		modelUniformParam.setUniformParameter( MODEL_MATRIX_UNIFORM_NAME, identityMatrix );
 		viewUniformParam.setUniformParameter( VIEW_MATRIX_UNIFORM_NAME, identityMatrix );
 		projectionUniformParam.setUniformParameter( PROJECTION_MATRIX_UNIFORM_NAME, identityMatrix );
+		cameraPositionUniformParam.setUniformParameter( CAMERA_POSITION_UNIFORM_NAME, vec3.create() ); 
 		inverseScreenWidthParam.setUniformParameter( INVERSE_SCREEN_WIDTH_UNIFORM_NAME, ( 1.0 / sharedRenderer.canvasDOMElement.width ) );
 		inverseScreenHeightParam.setUniformParameter( INVERSE_SCREEN_HEIGHT_UNIFORM_NAME, ( 1.0 / sharedRenderer.canvasDOMElement.height ) );
 		
 		this.m_shaderUniformParams.set( modelUniformParam.m_uniformName, modelUniformParam );
 		this.m_shaderUniformParams.set( viewUniformParam.m_uniformName, viewUniformParam );
 		this.m_shaderUniformParams.set( projectionUniformParam.m_uniformName, projectionUniformParam );
+		this.m_shaderUniformParams.set( cameraPositionUniformParam.m_uniformName, cameraPositionUniformParam );
 		this.m_shaderUniformParams.set( inverseScreenWidthParam.m_uniformName, inverseScreenWidthParam );
 		this.m_shaderUniformParams.set( inverseScreenHeightParam.m_uniformName, inverseScreenHeightParam );
 
@@ -382,7 +392,6 @@ PointLight.prototype =
 
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 		this.m_positionAttribute.m_attributeLocation 		= sharedRenderer.renderer.getAttribLocation( this.m_shaderProgram, this.m_positionAttribute.m_attributeName );
-		this.m_normalAttribute.m_attributeLocation 			= sharedRenderer.renderer.getAttribLocation( this.m_shaderProgram, this.m_normalAttribute.m_attributeName );
 	},
 
 
@@ -391,8 +400,6 @@ PointLight.prototype =
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
 		sharedRenderer.renderer.enableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
-
-		sharedRenderer.renderer.enableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
 	},
 
 
@@ -402,9 +409,6 @@ PointLight.prototype =
 
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, this.m_vertexBuffer );
 		sharedRenderer.renderer.vertexAttribPointer( this.m_positionAttribute.m_attributeLocation, 3, sharedRenderer.renderer.FLOAT, false, 0, 0  );
-
-		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ARRAY_BUFFER, this.m_normalBuffer );
-		sharedRenderer.renderer.vertexAttribPointer( this.m_normalAttribute.m_attributeLocation, 3, sharedRenderer.renderer.FLOAT, false, 0, 0 );
 		
 		sharedRenderer.renderer.bindBuffer( sharedRenderer.renderer.ELEMENT_ARRAY_BUFFER, this.m_faceBuffer );
 	},
@@ -415,7 +419,6 @@ PointLight.prototype =
 		var sharedRenderer = CBRenderer.getSharedRenderer();
 
 		sharedRenderer.renderer.disableVertexAttribArray( this.m_positionAttribute.m_attributeLocation );
-		sharedRenderer.renderer.disableVertexAttribArray( this.m_normalAttribute.m_attributeLocation );
 	},
 
 	// For Demonstration purposes 

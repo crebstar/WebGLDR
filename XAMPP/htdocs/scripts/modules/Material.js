@@ -19,6 +19,7 @@ var NORMAL_ATTRIBUTE_NAME 					= "a_normal";
 var MODEL_MATRIX_UNIFORM_NAME 				= "u_modelMatrix";
 var VIEW_MATRIX_UNIFORM_NAME 				= "u_viewMatrix";
 var PROJECTION_MATRIX_UNIFORM_NAME 			= "u_projectionMatrix";
+var CAMERA_POSITION_UNIFORM_NAME 			= "u_cameraPosition";
 var INVERSE_SCREEN_WIDTH_UNIFORM_NAME 		= "u_inverseScreenWidth";
 var INVERSE_SCREEN_HEIGHT_UNIFORM_NAME 		= "u_inverseScreenHeight";
 

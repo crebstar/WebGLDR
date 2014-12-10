@@ -30,13 +30,13 @@ function UpdateInput( deltaSeconds )
 
 var onKeyDown = function(e) 
 {
-	keysDown[ String.fromCharCode( e.keyCode ) ] = true;
+	keysDown[ e.keyCode ] = true;
 }
 
 
 var onKeyUp = function(e)
 {
-	keysDown[ String.fromCharCode( e.keyCode ) ] = false;
+	keysDown[ e.keyCode ] = false;
 }
 
 
@@ -55,6 +55,7 @@ var MouseStopped = function()
 
 var onMouseMove = function(e) 
 {
+	/*
 	var movementX = //e.movementX ||
      // e.mozMovementX          ||
       e.webkitMovementX       ||
@@ -64,21 +65,14 @@ var onMouseMove = function(e)
      // e.mozMovementY      ||
       e.webkitMovementY   ||
       0;
+      */
 
-	//Input.Mouse.lastX = e.clientX;
-	//Input.Mouse.lastY = e.clientY;
+     // Optimizing since demo is meant for chrome
+    var movementX = e.webkitMovementX;
+  	var movementY = e.webkitMovementY;
 
-	Input.Mouse.moveX = movementX * mouseDampenFactor;
-	Input.Mouse.moveY = movementY * mouseDampenFactor;
-
-	/*
-	if ( mouseTimer !== null )
-	{
-		clearTimeout( mouseTimer );
-	}
-
-	mouseTimer = setTimeout( MouseStopped, mouseTimerDelay );
-	*/
+	Input.Mouse.moveX = movementX;
+	Input.Mouse.moveY = movementY;
 }
 
 

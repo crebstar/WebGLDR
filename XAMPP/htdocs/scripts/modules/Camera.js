@@ -1,5 +1,5 @@
 
-define( [ "require", "InputManager", "CBEngine", "MathUtil", "Collections" ], function( require, MathUtil, Collections )
+define( [ "require", "InputManager", "CBEngine", "MathUtil", "MatrixStack", "Collections" ], function( require, MathUtil, Collections )
 {
 	console.log( "Camera.js has finished loading" );
 });
@@ -53,7 +53,7 @@ Camera.prototype =
 
 		//console.log( cameraForwardXY );
 
-		if ( keysDown['W'] )
+		if ( keysDown[ 87 ] ) // W
 		{
 			cameraMoveVector[0] -= cameraForwardXY[0];
 			cameraMoveVector[1] -= cameraForwardXY[1];
@@ -62,7 +62,7 @@ Camera.prototype =
 			//this.m_velocity[2] = CAMERA_MAX_VELOCITY_PER_SECOND * deltaSeconds;
 		}
 
-		if ( keysDown['S'] )
+		if ( keysDown[ 83 ] ) // S
 		{
 			cameraMoveVector[0] += cameraForwardXY[0];
 			cameraMoveVector[1] += cameraForwardXY[1];
@@ -71,7 +71,7 @@ Camera.prototype =
 			//this.m_velocity[2] = -CAMERA_MAX_VELOCITY_PER_SECOND * deltaSeconds;
 		}
 
-		if ( keysDown['A'] )
+		if ( keysDown[ 65 ] ) // A
 		{
 			cameraMoveVector[0] -= cameraLeftXY[0];
 			cameraMoveVector[1] -= cameraLeftXY[1];
@@ -79,7 +79,7 @@ Camera.prototype =
 			//this.m_velocity[0] = CAMERA_MAX_VELOCITY_PER_SECOND * deltaSeconds;
 		}
 
-		if ( keysDown['D'] )
+		if ( keysDown[ 68 ] ) // D
 		{
 			cameraMoveVector[0] += cameraLeftXY[0];
 			cameraMoveVector[1] += cameraLeftXY[1];
@@ -88,13 +88,13 @@ Camera.prototype =
 			//this.m_velocity[0] = -CAMERA_MAX_VELOCITY_PER_SECOND * deltaSeconds;
 		}
 
-		if ( keysDown['R'] )
+		if ( keysDown[ 82 ] ) // R
 		{
 			cameraMoveVector[1] += 1.0;
 			//this.m_velocity[1] = -CAMERA_MAX_VELOCITY_PER_SECOND * deltaSeconds;
 		}
 
-		if ( keysDown['F'] )
+		if ( keysDown[ 70 ] ) // F
 		{
 			cameraMoveVector[1] -= 1.0;
 			//this.m_velocity[1] = CAMERA_MAX_VELOCITY_PER_SECOND * deltaSeconds;
@@ -116,8 +116,8 @@ Camera.prototype =
 	{
 		if ( bUsePointerLock )
 		{
-			this.m_orientationDegrees[0] -= ( CAMERA_ROTATIONAL_VELOCITY_PER_SECOND * Input.Mouse.moveY ); // Pitch
-			this.m_orientationDegrees[1] -= ( CAMERA_ROTATIONAL_VELOCITY_PER_SECOND * Input.Mouse.moveX ); // Yaw
+			this.m_orientationDegrees[0] -= ( CAMERA_ROTATIONAL_VELOCITY_PER_SECOND * Input.Mouse.moveY * mouseDampenFactor ); // Pitch
+			this.m_orientationDegrees[1] -= ( CAMERA_ROTATIONAL_VELOCITY_PER_SECOND * Input.Mouse.moveX * mouseDampenFactor); // Yaw
 
 			if ( this.m_orientationDegrees[0] > 88.0 )
 			{
@@ -169,6 +169,8 @@ Camera.prototype =
 		
 		mat4.multiply( rotMultRot, rotateX, rotateY );
 		mat4.multiply( viewMatrix, rotMultRot, translate );
+
+		CBMatrixStack.cacheCurrentCameraPosition( this.m_position );
 
 		return viewMatrix;
 	},

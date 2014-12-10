@@ -53,7 +53,6 @@ Actor.prototype =
 	applyMatrixTransformsAndPushToStack : function( deltaSeconds )
 	{
 		var translationMatrix 	= mat4.create();
-		var rotationMatrix 		= mat4.create();
 
 		mat4.translate( translationMatrix, translationMatrix, this.m_position );
 		CBMatrixStack.applyModelMatrixAndCache( translationMatrix );

@@ -24,6 +24,7 @@ var MatrixStack = function()
 	this.m_currentViewMatrix 			= mat4.create();
 	this.m_currentModelMatrix 			= mat4.create();
 
+	this.m_currentCameraPosition 		= vec3.create();
 	// PR TODO :: 
 	//this.m_worldToCameraSpaceTransform 	= mat4.create();
 	//this.m_cameraToWorldSpaceTransform 	= mat4.create();
@@ -59,6 +60,14 @@ MatrixStack.prototype =
 			var identityMatrix = mat4.create();
 			return identityMatrix;
 		}
+	},
+
+
+	cacheCurrentCameraPosition : function( cameraPos )
+	{
+		this.m_currentCameraPosition[0] = cameraPos[0];
+		this.m_currentCameraPosition[1] = cameraPos[1];
+		this.m_currentCameraPosition[2] = cameraPos[2];
 	},
 
 
@@ -121,5 +130,8 @@ MatrixStack.prototype =
 		this.m_currentProjectionMatrix  = identityMatrix;
 		this.m_currentViewMatrix 		= identityMatrix;
 		this.m_currentModelMatrix 		= identityMatrix;
+		this.m_currentCameraPosition[0] = 0.0;
+		this.m_currentCameraPosition[1] = 0.0;
+		this.m_currentCameraPosition[2] = 0.0;
 	},
 }

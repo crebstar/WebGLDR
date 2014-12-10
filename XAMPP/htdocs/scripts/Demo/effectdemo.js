@@ -1,6 +1,7 @@
 
 console.log( "effectdemo.js has loaded" );
 
+/*
 var socket = io();
 
 var webrtc = new SimpleWebRTC({
@@ -17,9 +18,9 @@ webrtc.on('readyToCall', function () {
   // you can name it anything
   webrtc.joinRoom('your awesome room name');
 });
+*/
 
 
-/*
 var effect = document.getElementById( 'effect' );
 
 effect.width = 640;
@@ -83,6 +84,11 @@ function ToggleVideo()
 	}
 }
 
+var buffCreated = false;
+var bufSize = null;
+var bufIn = null;
+var bufOut = null;
+
 
 function SnapShot()
 {
@@ -96,7 +102,7 @@ function SnapShot()
 	dataArray = ectx.getImageData( 0, 0, effect.width, effect.height ); 
 
 	// Four color attributes per pixel
-
+	/*
 	var theta  = 1.50;
 	var gausianCoefficient = 1.0 / ( ( 2.0 * 3.14 ) * ( theta * theta ) );
 	var guasianDenom = 2.0 * theta * theta; 
@@ -171,17 +177,146 @@ function SnapShot()
 		{
 			newValue = 250.0;
 		}
-		//console.log( spread );
+		
 
 		dataArray.data[i] 		= newValue;
 		dataArray.data[i + 1] 	= newValue;
 		dataArray.data[i + 2] 	= newValue;
 		dataArray.data[i + 3] 	= 255; // Alpha
 	}
-	
+	*/
+	if ( !buffCreated )
+	{
+		bufSize = effect.width * effect.height * 4;
+		bufIn = webCLContext.createBuffer(WebCL.MEM_READ_ONLY, bufSize);
+    	bufOut = webCLContext.createBuffer(WebCL.MEM_WRITE_ONLY, bufSize);
+	}
+
+	 // Create kernel and set arguments
+    var kernel = program.createKernel ("clDesaturate");
+    kernel.setArg (0, bufIn);
+    kernel.setArg (1, bufOut);
+    kernel.setArg (2, new Uint32Array([ effect.width ]));
+    kernel.setArg (3, new Uint32Array([ effect.height ]));
+
+    // Create command queue using the first available device
+    var cmdQueue = webCLContext.createCommandQueue (device);
+
+    // Write the buffer to OpenCL device memory
+    cmdQueue.enqueueWriteBuffer (bufIn, false, 0, bufSize, dataArray.data);
+
+    // Init ND-range 
+    var localWS = [16,4];  
+    var globalWS = [Math.ceil ( effect.width / localWS[0]) * localWS[0], 
+                    Math.ceil ( effect.height / localWS[1]) * localWS[1]];
+    // Execute (enqueue) kernel
+    cmdQueue.enqueueNDRangeKernel(kernel, 2, null, 
+                                  globalWS, localWS);
+
+    // Read the result buffer from OpenCL device
+    cmdQueue.enqueueReadBuffer (bufOut, false, 0, bufSize, dataArray.data);
+    cmdQueue.finish(); //Finish all the operations
 
 	ectx.putImageData( dataArray, 0, 0 );
 }
 
-//StartVideo();
+/*
+	// Setup WebCL context using the default device
+    var ctx = webcl.createContext();
+
+    // Setup buffers
+    var imgSize = width * height;
+    output.innerHTML += "<br>Image size: " + imgSize + " pixels ("
+                     + width + " x " + height + ")";
+    var bufSize = imgSize * 4; // size in bytes
+    output.innerHTML += "<br>Buffer size: " + bufSize + " bytes";
+    
+    var bufIn = ctx.createBuffer (WebCL.MEM_READ_ONLY, bufSize);
+    var bufOut = ctx.createBuffer (WebCL.MEM_WRITE_ONLY, bufSize);
+
+     // Create and build program
+    var kernelSrc = loadKernel("clProgramDesaturate");
+    var program = ctx.createProgram(kernelSrc);
+    var device = ctx.getInfo(WebCL.CONTEXT_DEVICES)[0];
+    try {
+      program.build ([device], "");
+    } catch(e) {
+      alert ("Failed to build WebCL program. Error "
+             + program.getBuildInfo (device, 
+                                            WebCL.PROGRAM_BUILD_STATUS)
+             + ":  " + program.getBuildInfo (device, 
+                                                    WebCL.PROGRAM_BUILD_LOG));
+      throw e;
+    }
+
+    // Create kernel and set arguments
+    var kernel = program.createKernel ("clDesaturate");
+    kernel.setArg (0, bufIn);
+    kernel.setArg (1, bufOut);
+    kernel.setArg (2, new Uint32Array([width]));
+    kernel.setArg (3, new Uint32Array([height]));
+
+    // Create command queue using the first available device
+    var cmdQueue = ctx.createCommandQueue (device);
+
+    // Write the buffer to OpenCL device memory
+    cmdQueue.enqueueWriteBuffer (bufIn, false, 0, bufSize, pixels.data);
+
+    // Init ND-range 
+    var localWS = [16,4];  
+    var globalWS = [Math.ceil (width / localWS[0]) * localWS[0], 
+                    Math.ceil (height / localWS[1]) * localWS[1]];
+    // Execute (enqueue) kernel
+    cmdQueue.enqueueNDRangeKernel(kernel, 2, null, 
+                                  globalWS, localWS);
+
+    // Read the result buffer from OpenCL device
+    cmdQueue.enqueueReadBuffer (bufOut, false, 0, bufSize, pixels.data);
+    cmdQueue.finish (); //Finish all the operations
+    
+    canvasImgCtx.putImageData (pixels, 0, 0);
+
 */
+
+var webCLContext = null;    
+var kernelSrc = null;
+var program = null;
+var device = null;
+
+
+function loadKernel(id){
+  var kernelElement = document.getElementById(id);
+  var kernelSource = kernelElement.text;
+  if (kernelElement.src != "") {
+      var mHttpReq = new XMLHttpRequest();
+      mHttpReq.open("GET", kernelElement.src, false);
+      mHttpReq.send(null);
+      kernelSource = mHttpReq.responseText;
+  } 
+  return kernelSource;
+}
+
+
+function SetUpWebCL()
+{
+	webCLContext = webcl.createContext();
+	kernelSrc = loadKernel("clProgramDesaturate");
+	program = webCLContext.createProgram(kernelSrc);
+	device = webCLContext.getInfo(WebCL.CONTEXT_DEVICES)[0];
+
+	try {
+      program.build([device], "");
+    } catch(e) {
+      alert ("Failed to build WebCL program. Error "
+             + program.getBuildInfo (device, 
+                                            WebCL.PROGRAM_BUILD_STATUS)
+             + ":  " + program.getBuildInfo (device, 
+                                                    WebCL.PROGRAM_BUILD_LOG));
+      throw e;
+    }
+}
+
+SetUpWebCL();
+
+StartVideo();
+

@@ -16,21 +16,21 @@ void main(void)
 	vec2 texCoords = gl_FragCoord.xy * inverseScreenCoords;
 
 	vec4 renderTargetOne  			= texture2D( s_renderTargetOne, texCoords );
-	//vec4 renderTargetTwo 			= texture2D( s_renderTargetTwo, texCoords );
 	vec4 renderTargetFour 			= texture2D( s_renderTargetFour, texCoords );
 	vec4 renderTargetFive 			= texture2D( s_renderTargetFive, texCoords );
 
 	vec3 diffuseColor 				= renderTargetOne.xyz;
-	//vec3 normalsWorldSpace 			= renderTargetTwo.xyz;
 	vec3 accumulatedDiffuseLight 	= renderTargetFour.xyz;
 	vec3 accumulatedSpecularLight 	= renderTargetFive.xyz;
 
-	vec3 ambientGlobalLight 		= vec3( 0.065, 0.065, 0.065 );
+	vec3 ambientGlobalLight 		= vec3( 0.055, 0.055, 0.055 );
 
-	vec3 finalColor = ( diffuseColor * accumulatedDiffuseLight + ( diffuseColor * ambientGlobalLight ) );
+	accumulatedSpecularLight.x 		= clamp( accumulatedSpecularLight.x, 0.0, 1.0 );
+	accumulatedSpecularLight.y 		= clamp( accumulatedSpecularLight.y, 0.0, 1.0 );
+	accumulatedSpecularLight.z 		= clamp( accumulatedSpecularLight.z, 0.0, 1.0 );
 
-	
+	vec3 finalColor = ( diffuseColor * accumulatedDiffuseLight + accumulatedSpecularLight + ( diffuseColor * ambientGlobalLight ) );
+
 	gl_FragColor = vec4( finalColor, 1.0 );
-
 	//gl_FragColor = vec4( accumulatedSpecularLight, 1.0 );
 }
