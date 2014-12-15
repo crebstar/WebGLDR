@@ -102,7 +102,7 @@ function SnapShot()
 	dataArray = ectx.getImageData( 0, 0, effect.width, effect.height ); 
 
 	// Four color attributes per pixel
-	/*
+	
 	var theta  = 1.50;
 	var gausianCoefficient = 1.0 / ( ( 2.0 * 3.14 ) * ( theta * theta ) );
 	var guasianDenom = 2.0 * theta * theta; 
@@ -110,6 +110,7 @@ function SnapShot()
 	var luminanceArray = new Array( dataArray.data.length / 4 );
 	
 	// First Pass
+	var jsBegin = performance.now();
 	for ( var i = 4; i < ( dataArray.data.length - 4 ); i += 4 )
 	{
 		var r 	= dataArray.data[i];
@@ -117,13 +118,18 @@ function SnapShot()
 		var b  	= dataArray.data[i + 2];
 
 		var luminance = (r * 0.3) + (g * 0.59) + (b * 0.11);
-		luminanceArray[i/4] = luminance;
+		//luminanceArray[i/4] = luminance;
+
+		dataArray.data[i] 		= luminance;
+		dataArray.data[i + 1] 	= luminance;
+		dataArray.data[i + 2] 	= luminance;
 
 		//console.log( Math.pow( gausianCoefficient, ( r*r + g*g + b*b ) / guasianDenom ) );
 	}
+	var jsEnd = performance.now();
 
+	/*
 	var runningAvg = 0.0;
-
 	for ( var i = 8; i < ( dataArray.data.length - 4 ); i += 4 )
 	{
 		var r 	= dataArray.data[i];
@@ -185,6 +191,9 @@ function SnapShot()
 		dataArray.data[i + 3] 	= 255; // Alpha
 	}
 	*/
+
+
+	
 	if ( !buffCreated )
 	{
 		bufSize = effect.width * effect.height * 4;
@@ -215,7 +224,16 @@ function SnapShot()
 
     // Read the result buffer from OpenCL device
     cmdQueue.enqueueReadBuffer (bufOut, false, 0, bufSize, dataArray.data);
+    var webCLBegin = performance.now();
     cmdQueue.finish(); //Finish all the operations
+    var webCLEnd = performance.now();
+
+    var webCLTime = webCLEnd - webCLBegin;
+    var JSTime = jsEnd - jsBegin;
+
+    var percentage = (( ( JSTime - webCLTime ) / JSTime ) * 100.0 ).toFixed( 2 );
+
+    console.log( percentage );
 
 	ectx.putImageData( dataArray, 0, 0 );
 }

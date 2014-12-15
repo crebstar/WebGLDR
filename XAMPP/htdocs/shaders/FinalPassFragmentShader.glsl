@@ -23,7 +23,7 @@ void main(void)
 	vec3 accumulatedDiffuseLight 	= renderTargetFour.xyz;
 	vec3 accumulatedSpecularLight 	= renderTargetFive.xyz;
 
-	vec3 ambientGlobalLight 		= vec3( 0.055, 0.055, 0.055 );
+	vec3 ambientGlobalLight 		= vec3( 0.075, 0.075, 0.075 );
 
 	accumulatedSpecularLight.x 		= clamp( accumulatedSpecularLight.x, 0.0, 1.0 );
 	accumulatedSpecularLight.y 		= clamp( accumulatedSpecularLight.y, 0.0, 1.0 );
@@ -32,5 +32,4 @@ void main(void)
 	vec3 finalColor = ( diffuseColor * accumulatedDiffuseLight + accumulatedSpecularLight + ( diffuseColor * ambientGlobalLight ) );
 
 	gl_FragColor = vec4( finalColor, 1.0 );
-	//gl_FragColor = vec4( accumulatedSpecularLight, 1.0 );
 }

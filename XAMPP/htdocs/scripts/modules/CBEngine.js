@@ -6,7 +6,6 @@ define( [ "require", "InputManager", "CBStorage", "CBRenderer", "MathUtil", "Mat
 
 	InitializeEngine();
 	StartGameLoop();
-
 });
 
 
@@ -67,11 +66,7 @@ function InitializeEngine()
 
 function InitializePointLights()
 {
-	for ( var i = 0; i < NUM_STARTING_LIGHTS; ++i )
-	{
-		AddLightToScene();
-	}
-
+	AddLightsToScene( NUM_STARTING_LIGHTS );
 	UpdateLightCount( sceneLights.length );
 }
 
@@ -245,6 +240,7 @@ function StartGameLoop()
 var previousTimeSeconds = 0.0;
 var millisToSecondsRatio = 1.0 / 1000.0;
 
+
 function RunFrame( timeSeconds )
 {
 	var deltaSeconds = millisToSecondsRatio * ( timeSeconds - previousTimeSeconds );
@@ -258,13 +254,9 @@ function RunFrame( timeSeconds )
 	// ==== Update ==== //
 	UpdateSceneLights( deltaSeconds );
 	gameWorld.update( deltaSeconds );
-
 	
 	// ==== Render ==== //
-
 	var sharedRenderer = CBRenderer.getSharedRenderer();
-
-	// TODO:: Move this to CBRenderer
 	sharedRenderer.renderer.viewport( 0.0, 0.0, sharedRenderer.canvasDOMElement.width, sharedRenderer.canvasDOMElement.height );
     sharedRenderer.renderer.clear( sharedRenderer.renderer.COLOR_BUFFER_BIT | sharedRenderer.renderer.DEPTH_BUFFER_BIT );
 
@@ -282,14 +274,11 @@ function RunFrame( timeSeconds )
 		sharedRenderer.renderSceneToGBuffer( gameWorld, def_GBuffer, deltaSeconds );
 		sharedRenderer.renderSceneLightsToLBuffer( sceneLights, def_GBuffer, def_LBuffer, deltaSeconds );
 		sharedRenderer.renderSceneFinalPass( finalRenderScene, def_GBuffer, def_LBuffer, deltaSeconds );
-
-		//sharedRenderer.renderScene( gameWorld, deltaSeconds );
 	}
 	
-
-	// ==== Clean up for next frame ==== //
 	sharedRenderer.renderer.flush();
 
+	// ==== Clean up for next frame ==== //
 	CBMatrixStack.clearMatrixStackAndPushIdentityMatrix();
 	MouseStopped();
 
@@ -335,25 +324,28 @@ function UpdateLightCount( numLights )
 }
 
 
-function AddLightToScene()
+function AddLightsToScene( numLightsToAdd )
 {
-	var lightOuterRadius = MAX_LIGHT_RADIUS * Math.random();
-	if ( lightOuterRadius < MIN_LIGHT_RADIUS )
+	for ( var i = 0; i < numLightsToAdd; ++i )
 	{
-		lightOuterRadius = MIN_LIGHT_RADIUS;
-	}
-	var lightInnerRadius = lightOuterRadius * INNER_RADIUS_COEFFICIENT;
+		var lightOuterRadius = MAX_LIGHT_RADIUS * Math.random();
+		if ( lightOuterRadius < MIN_LIGHT_RADIUS )
+		{
+			lightOuterRadius = MIN_LIGHT_RADIUS;
+		}
+		var lightInnerRadius = lightOuterRadius * INNER_RADIUS_COEFFICIENT;
 
-	var pl = new PointLight( lightOuterRadius, lightInnerRadius );
-	pl.initializePointLight();
-	pl.m_position[0] = Math.random() * X_WORLD_BOUND;
-	pl.m_position[1] = Math.random() * Y_WORLD_BOUND;
-	pl.m_position[2] = Math.random() * Z_WORLD_BOUND;
-	pl.m_colorAndBrightness[0] = Math.random() * 1.0;
-	pl.m_colorAndBrightness[1] = Math.random() * 1.0;
-	pl.m_colorAndBrightness[2] = Math.random() * 1.0;
-	pl.m_colorAndBrightness[3] = 1.0; 
-	sceneLights.push( pl );
+		var pl = new PointLight( lightOuterRadius, lightInnerRadius );
+		pl.initializePointLight();
+		pl.m_position[0] = Math.random() * X_WORLD_BOUND;
+		pl.m_position[1] = Math.random() * Y_WORLD_BOUND;
+		pl.m_position[2] = Math.random() * Z_WORLD_BOUND;
+		pl.m_colorAndBrightness[0] = Math.random() * 1.0;
+		pl.m_colorAndBrightness[1] = Math.random() * 1.0;
+		pl.m_colorAndBrightness[2] = Math.random() * 1.0;
+		pl.m_colorAndBrightness[3] = 1.0; 
+		sceneLights.push( pl );
+	}
 }
 
 
@@ -371,7 +363,12 @@ var onKeyDownCB = function(e)
 	}
 	else if ( e.keyCode == 76 ) // L
 	{
-		AddLightToScene();
+		AddLightsToScene( 1 );
+		UpdateLightCount( sceneLights.length );
+	}
+	else if ( e.keyCode == 75 ) // K
+	{
+		AddLightsToScene( 5 );
 		UpdateLightCount( sceneLights.length );
 	}
 
